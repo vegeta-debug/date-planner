@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date & Travel Planner 💕</title>
+  <meta name="description" content="Let me make it easy for you 😉">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-from: #fff0f5;
+      --bg-to: #fce4ec;
+      --card: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(255, 180, 180, 0.35);
+      --text: #3d2c35;
+      --text-soft: #9c7080;
+      --text-mute: #c9a8b5;
+      --accent: #e05c7e;
+      --accent-hover: #c94e6e;
+      --accent-bg: #fde8ee;
+      --you: #7c5cbf;
+      --you-bg: #ede7f9;
+      --partner: #e08030;
+      --partner-bg: #fdf0e0;
+      --both: #3a9e6f;
+      --both-bg: #e2f5ec;
+      --shadow: 0 8px 32px rgba(224, 92, 126, 0.12);
+      --shadow-hover: 0 16px 48px rgba(224, 92, 126, 0.22);
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1.5rem 6rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Floating hearts background ── */
+    .hearts-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .heart-float {
+      position: absolute;
+      bottom: -60px;
+      font-size: 22px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(-10deg) scale(0.8);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.45;
+      }
+
+      90% {
+        opacity: 0.25;
+      }
+
+      100% {
+        transform: translateY(-110vh) rotate(15deg) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    /* ── Main wrap ── */
+    .wrap {
+      max-width: 660px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeSlideDown 0.7s ease both;
+    }
+
+    .site-title {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin: 0 0 6px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 12px rgba(224, 92, 126, 0.25);
+    }
+
+    .site-sub {
+      color: var(--text-soft);
+      font-size: 14px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* ── Glass card ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* ── Login box ── */
+    #loginBox {
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    .login-emoji {
+      font-size: 2.5rem;
+      display: block;
+      text-align: center;
+      margin-bottom: 10px;
+      animation: heartbeat 1.6s ease infinite;
+    }
+
+    @keyframes heartbeat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      14% {
+        transform: scale(1.18);
+      }
+
+      28% {
+        transform: scale(1);
+      }
+
+      42% {
+        transform: scale(1.12);
+      }
+
+      56% {
+        transform: scale(1);
+      }
+    }
+
+    .login-title {
+      font-weight: 800;
+      font-size: 18px;
+      margin: 0 0 16px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Inputs ── */
+    input,
+    select {
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(224, 92, 126, 0.15);
+    }
+
+    input::placeholder {
+      color: var(--text-mute);
+      font-weight: 600;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    /* ── Buttons ── */
+    button {
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.95) !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #f472a0 100%);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(224, 92, 126, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-hover) 0%, #e05c8e 100%);
+      box-shadow: 0 6px 24px rgba(224, 92, 126, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--text-soft);
+      border: 1.5px solid var(--card-border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .addcal-wrap {
+      display: inline-block;
+    }
+
+    .addcal-menu {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      background: #fff;
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-hover);
+      padding: 6px;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+    }
+
+    .addcal-menu.open {
+      display: flex;
+    }
+
+    .addcal-menu button {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .addcal-menu button:hover {
+      background: var(--accent-bg);
+    }
+
+    .addcal-menu button:active {
+      transform: none !important;
+    }
+
+    .app-toast {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-16px);
+      background: linear-gradient(135deg, var(--accent) 0%, #f472a0 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 11px 20px;
+      border-radius: 30px;
+      box-shadow: var(--shadow-hover);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .app-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .btn-confirm {
+      background: linear-gradient(135deg, var(--both) 0%, #52c48a 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(58, 158, 111, 0.3);
+      font-size: 13px;
+    }
+
+    .btn-confirm:hover {
+      box-shadow: 0 6px 20px rgba(58, 158, 111, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-done {
+      background: linear-gradient(135deg, #ffd76e 0%, #ffb347 100%);
+      color: #7a4600;
+      box-shadow: 0 4px 14px rgba(255, 179, 71, 0.4);
+    }
+
+    .btn-done:hover {
+      box-shadow: 0 6px 18px rgba(255, 179, 71, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* ── Top row ── */
+    .toprow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 12px;
+      flex-wrap: wrap;
+      animation: fadeSlideDown 0.6s ease both;
+    }
+
+    .role-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+
+    .role-row select {
+      width: auto;
+      padding: 7px 12px;
+      font-size: 13px;
+    }
+
+    .loadstate {
+      font-size: 12px;
+      color: var(--text-mute);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── Add row ── */
+    .addrow {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      animation: fadeSlideDown 0.65s ease both;
+    }
+
+    .addrow input {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .addrow .btn-primary {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Idea list ── */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .idea-card {
+      background: var(--card);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      animation: fadeSlideUp 0.45s ease both;
+    }
+
+    .idea-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(224, 92, 126, 0.4);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+      gap: 12px;
+      padding: 18px 20px;
+      user-select: none;
+    }
+
+    .card-head-text {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .card-head:active {
+      background: rgba(224, 92, 126, 0.04);
+    }
+
+    .idea-title {
+      font-weight: 800;
+      font-size: 15px;
+      margin: 0 0 3px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .idea-notes {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin: 0;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+
+    .picked-line {
+      font-size: 13px;
+      color: var(--both);
+      margin: 5px 0 0;
+      font-weight: 700;
+    }
+
+    .card-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .chevron {
+      color: var(--text-mute);
+      font-size: 18px;
+      transition: transform 0.3s cubic-bezier(.34, 1.56, .64, 1);
+      line-height: 1;
+    }
+
+    .chevron.open {
+      transform: rotate(180deg);
+    }
+
+    /* ── Pills ── */
+    .pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    .pill.proposed {
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .pill.picked {
+      background: var(--both-bg);
+      color: var(--both);
+    }
+
+    /* ── Calendar panel ── */
+    .cal-panel {
+      border-top: 1.5px solid var(--card-border);
+      padding: 16px 20px 20px;
+      animation: expandDown 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+      transform-origin: top;
+    }
+
+    /* ── Edit panel ── */
+    .edit-panel {
+      border-top: 1.5px solid var(--card-border);
+      padding: 16px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: expandDown 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+      transform-origin: top;
+    }
+
+    .edit-panel-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-panel-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    textarea {
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      resize: vertical;
+      min-height: 64px;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(224, 92, 126, 0.15);
+    }
+
+    textarea::placeholder {
+      color: var(--text-mute);
+      font-weight: 600;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1.5px solid var(--card-border);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .add-details-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-mute);
+      cursor: pointer;
+      text-decoration: underline dotted;
+      text-underline-offset: 2px;
+    }
+
+    .add-details-btn:hover {
+      color: var(--accent);
+    }
+
+    .add-details-btn:active {
+      transform: none !important;
+    }
+
+    @keyframes expandDown {
+      from {
+        opacity: 0;
+        transform: scaleY(0.85);
+      }
+
+      to {
+        opacity: 1;
+        transform: scaleY(1);
+      }
+    }
+
+    .cal {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin: 0 0 12px;
+    }
+
+    .day {
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      border: 1.5px solid rgba(224, 92, 126, 0.15);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--text-soft);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      line-height: 1.2;
+    }
+
+    .day:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .day:active {
+      transform: scale(0.95);
+    }
+
+    .day.you {
+      background: var(--you-bg);
+      color: var(--you);
+      border-color: rgba(124, 92, 191, 0.25);
+    }
+
+    .day.partner {
+      background: var(--partner-bg);
+      color: var(--partner);
+      border-color: rgba(224, 128, 48, 0.25);
+    }
+
+    .day.both {
+      background: linear-gradient(135deg, var(--both-bg), #d0f0e0);
+      color: var(--both);
+      border-color: rgba(58, 158, 111, 0.35);
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(58, 158, 111, 0.2);
+      animation: pulse-green 2s ease infinite;
+    }
+
+    @keyframes pulse-green {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 14px rgba(58, 158, 111, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 4px 22px rgba(58, 158, 111, 0.4);
+      }
+    }
+
+    /* ── Legend ── */
+    .legend {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin: 0 0 12px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* ── Match row ── */
+    .match-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .month-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-soft);
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em
+    }
+
+    .month-label:first-of-type {
+      margin-top: 2px
+    }
+
+    .match-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px
+    }
+
+    .match-text {
+      font-size: 13px;
+      color: var(--both);
+      font-weight: 800;
+    }
+
+    .no-match {
+      font-size: 13px;
+      color: var(--text-mute);
+      font-weight: 700;
+      margin: 10px 0 0;
+    }
+
+    /* ── Added-by badge ── */
+    .added-by {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 20px;
+      margin: 6px 0 0;
+      letter-spacing: 0.2px;
+    }
+
+    .added-by-you {
+      background: var(--you-bg);
+      color: var(--you);
+    }
+
+    .added-by-partner {
+      background: var(--partner-bg);
+      color: var(--partner);
+    }
+
+    /* ── Error ── */
+    .error {
+      color: #c0392b;
+      font-size: 13px;
+      font-weight: 700;
+      background: #fde8e8;
+      border: 1.5px solid #f5c6c6;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 1rem;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-6px);
+      }
+
+      40% {
+        transform: translateX(6px);
+      }
+
+      60% {
+        transform: translateX(-4px);
+      }
+
+      80% {
+        transform: translateX(4px);
+      }
+    }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-mute);
+      font-size: 15px;
+      font-weight: 700;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .empty-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+      animation: sway 3s ease infinite;
+    }
+
+    /* ── Done Dates section ── */
+    .done-section {
+      margin-top: 28px;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .done-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      background: linear-gradient(135deg, var(--both-bg) 0%, #d4f0e0 100%);
+      border: 1.5px dashed var(--both);
+      color: var(--both);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .done-toggle:hover {
+      background: linear-gradient(135deg, #d4f0e0 0%, var(--both-bg) 100%);
+    }
+
+    .done-count-badge {
+      background: var(--both);
+      color: #fff;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .done-stats {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--text-soft);
+      font-weight: 700;
+      margin: 10px 0 0;
+    }
+
+    .done-list {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      animation: expandDown 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+      transform-origin: top;
+    }
+
+    .done-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1.5px solid var(--both-bg);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+    }
+
+    .done-card-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin: 0 0 2px;
+      color: var(--text);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .done-card-date {
+      font-size: 12px;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin: 0;
+    }
+
+    @keyframes sway {
+
+      0%,
+      100% {
+        transform: rotate(-8deg);
+      }
+
+      50% {
+        transform: rotate(8deg);
+      }
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Stagger idea cards ── */
+    .idea-card:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .idea-card:nth-child(2) {
+      animation-delay: 0.10s;
+    }
+
+    .idea-card:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .idea-card:nth-child(4) {
+      animation-delay: 0.20s;
+    }
+
+    .idea-card:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    /* ── Sparkle on add ── */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 20px;
+      animation: sparkleOut 0.8s ease forwards;
+    }
+
+    @keyframes sparkleOut {
+      0% {
+        opacity: 1;
+        transform: scale(0.5) translateY(0);
+      }
+
+      60% {
+        opacity: 1;
+        transform: scale(1.2) translateY(-30px);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-60px);
+      }
+    }
+
+    /* ── Toggle Switch ── */
+    .role-toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .role-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-mute);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .role-label.active {
+      color: var(--text);
+      font-weight: 800;
+      transform: scale(1.05);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--you);
+      transition: .4s;
+      border-radius: 26px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked+.slider {
+      background-color: var(--partner);
+    }
+
+    input:focus+.slider {
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(224, 128, 48, 0.2);
+    }
+
+    input:not(:checked):focus+.slider {
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(124, 92, 191, 0.2);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(22px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating hearts background -->
+  <div class="hearts-bg" id="heartsBg"></div>
+
+  <div class="wrap">
+    <!-- Header -->
+    <header class="site-header">
+      <h1 class="site-title">date planner 💕</h1>
+      <p class="site-sub">Let's do it the right way! ✨</p>
+    </header>
+
+    <div id="errorBox"></div>
+
+    <!-- Login -->
+    <div id="loginBox" class="card" style="display:none">
+      <span class="login-emoji">🔐</span>
+      <p class="login-title">Enter the secret code</p>
+      <div class="input-group">
+        <div class="role-toggle-container">
+          <span class="role-label active" id="label-you"
+            onclick="document.getElementById('roleToggle').checked = false; document.getElementById('roleToggle').dispatchEvent(new Event('change'))">💜
+            I am Me (♂)</span>
+          <label class="switch">
+            <input type="checkbox" id="roleToggle">
+            <span class="slider"></span>
+          </label>
+          <span class="role-label" id="label-partner"
+            onclick="document.getElementById('roleToggle').checked = true; document.getElementById('roleToggle').dispatchEvent(new Event('change'))">🧡
+            I am Me (♀)</span>
+        </div>
+        <input id="loginPassword" type="password" placeholder="Remember where we went for our first date 💌"
+          autocomplete="current-password" />
+        <button id="loginBtn" class="btn-primary">Let me in! 🌸</button>
+      </div>
+    </div>
+
+    <!-- App -->
+    <div id="appBox" style="display:none">
+      <div class="toprow">
+        <div class="role-row">
+          <button id="logoutBtn" class="btn-ghost" style="padding:7px 13px;font-size:13px">Sign out</button>
+        </div>
+        <span class="loadstate" id="loadState"></span>
+      </div>
+
+      <div class="addrow">
+        <input id="newTitle" placeholder="✈️ What do you want to do?" style="flex:2" />
+        <input id="newNotes" placeholder="📝 Details(but you don't have to)" style="flex:2" />
+        <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:90px;">
+          <label for="newDuration" style="font-size:13px; font-weight:700; color:var(--text-soft);">Days:</label>
+          <input id="newDuration" type="number" min="1" value="1" style="width:100%;" />
+        </div>
+        <button id="addBtn" class="btn-primary">＋ Add idea</button>
+      </div>
+
+      <div class="list" id="ideaList"></div>
+      <div class="done-section" id="doneSection" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="addcal-menu" id="globalAddCalMenu">
+    <button id="addcalGoogleBtn">📆 Google Calendar</button>
+    <button id="addcalIcsBtn">📥 Apple / Outlook (.ics)</button>
+    <button id="addcalTimeTreeBtn">🌳 TimeTree</button>
+  </div>
+
+  <script>
+    /* ====================================================================
+       These two values are injected at deploy time by the GitHub Actions
+       workflow (.github/workflows/deploy.yml), which reads them from your
+       repo's encrypted Secrets — they are never committed to the repo.
+       Do not edit these two lines directly.
+       ==================================================================== */
+    const SUPABASE_URL = "__SUPABASE_URL__";
+    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+
+    /* These are the two account emails used for the two different logins.
+       You need to create TWO users in your Supabase Auth dashboard using
+       these exact emails and set a password for each. */
+    const YOU_EMAIL = "you@planner.local";
+    const PARTNER_EMAIL = "partner@planner.local";
+
+    let sb; // initialised in init() after credentials are verified
+
+    let role = localStorage.getItem('planner_role') || 'you';
+    let ideas = [];
+    let availCache = {};
+    let openIdeaId = null;
+    let editingIdeaId = null;
+    let doneSectionOpen = false;
+
+    /* ── Floating hearts ── */
+    (function spawnHearts() {
+      const bg = document.getElementById('heartsBg');
+      const emojis = ['💕', '🌸', '✨', '💗', '🌷', '💖', '🍓', '💝', '🌺', '🫧'];
+      for (let i = 0; i < 18; i++) {
+        const el = document.createElement('span');
+        el.className = 'heart-float';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (Math.random() * 100) + '%';
+        el.style.fontSize = (14 + Math.random() * 18) + 'px';
+        el.style.animationDuration = (14 + Math.random() * 18) + 's';
+        el.style.animationDelay = (Math.random() * 20) + 's';
+        bg.appendChild(el);
+      }
+    })();
+
+    /* ── Sparkle burst on button click ── */
+    function spawnSparkles(x, y) {
+      const sparks = ['✨', '💕', '🌸', '⭐', '💖'];
+      for (let i = 0; i < 5; i++) {
+        const el = document.createElement('span');
+        el.className = 'sparkle';
+        el.textContent = sparks[Math.floor(Math.random() * sparks.length)];
+        el.style.left = (x - 10 + (Math.random() - 0.5) * 60) + 'px';
+        el.style.top = (y - 10 + (Math.random() - 0.5) * 40) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('errorBox').innerHTML =
+        `<div class="error">⚠️ ${msg}</div>`;
+    }
+    function clearError() { document.getElementById('errorBox').innerHTML = ''; }
+
+    function showToast(msg) {
+      let toast = document.getElementById('appToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'appToast';
+        toast.className = 'app-toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    function formatLocalDate(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function todayPlus(n) {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return formatLocalDate(d);
+    }
+    function dayLabel(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' });
+    }
+    function fullDayLabel(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+
+    // ── Add-to-calendar helpers ──
+    // These only ever build a URL or a local file — no calendar account access of any kind.
+    function ymd(iso) { return iso.replace(/-/g, ''); }
+
+    function getEventRange(idea) {
+      const dur = idea.duration || 1;
+      const start = idea.confirmed_date;
+      const endDate = new Date(start + 'T00:00:00');
+      endDate.setDate(endDate.getDate() + dur); // exclusive end, as required by Google/ICS all-day events
+      return { start, endExclusive: formatLocalDate(endDate) };
+    }
+
+    function eventTitle(idea) {
+      return `[It's a date] ${idea.title || 'Our date'}`;
+    }
+
+    function buildGoogleCalendarUrl(idea) {
+      const { start, endExclusive } = getEventRange(idea);
+      const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: eventTitle(idea),
+        dates: `${ymd(start)}/${ymd(endExclusive)}`,
+        details: idea.notes || ''
+      });
+      return `https://calendar.google.com/calendar/render?${params.toString()}`;
+    }
+
+    function buildICS(idea) {
+      const { start, endExclusive } = getEventRange(idea);
+      const escapeText = (s) => (s || '').replace(/([,;])/g, '\\$1').replace(/\n/g, '\\n');
+      const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Date Planner//EN',
+        'BEGIN:VEVENT',
+        `UID:${idea.id}@date-planner`,
+        `DTSTAMP:${now}`,
+        `DTSTART;VALUE=DATE:${ymd(start)}`,
+        `DTEND;VALUE=DATE:${ymd(endExclusive)}`,
+        `SUMMARY:${escapeText(eventTitle(idea))}`,
+        idea.notes ? `DESCRIPTION:${escapeText(idea.notes)}` : '',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].filter(Boolean);
+      return lines.join('\r\n');
+    }
+
+    function downloadICS(idea) {
+      const blob = new Blob([buildICS(idea)], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (idea.title || 'event').replace(/[^a-z0-9]+/gi, '_').toLowerCase() + '.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function eventDateRangeLabel(idea) {
+      const dur = idea.duration || 1;
+      const start = idea.confirmed_date;
+      let label = fullDayLabel(start);
+      if (dur > 1) {
+        const endDate = new Date(start + 'T00:00:00');
+        endDate.setDate(endDate.getDate() + dur - 1);
+        label += ' - ' + fullDayLabel(formatLocalDate(endDate));
+      }
+      return label;
+    }
+
+    // TimeTree discontinued its public "add event" prefill API in Dec 2023, so there's
+    // no way to open TimeTree with a form already filled in, the way Google Calendar allows.
+    // The next best thing: copy the event details so they can be pasted into a new
+    // TimeTree event in a couple of seconds, then open TimeTree to do that.
+    async function addToTimeTree(idea) {
+      const text = `${eventTitle(idea)}\n📅 ${eventDateRangeLabel(idea)}${idea.notes ? '\n📝 ' + idea.notes : ''}`;
+      let copied = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        }
+      } catch (e) { copied = false; }
+
+      if (copied) {
+        showToast('📋 Event details copied! Paste into your new TimeTree event 🌳');
+      } else {
+        window.prompt('Copy these details, then paste into your new TimeTree event:', text);
+      }
+      window.open('https://timetreeapp.com/signin', '_blank', 'noopener');
+    }
+
+    function linkify(text) {
+      if (!text) return '';
+      const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const urlRegex = /((?:https?:\/\/|www\.)[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=%]+)/g;
+      return escaped.replace(urlRegex, function (url) {
+        let href = url.replace(/&amp;/g, '&');
+        if (!href.startsWith('http')) {
+          href = 'http://' + href;
+        }
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color: var(--accent); text-decoration: underline;">${url}</a>`;
+      });
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // role initialization moved to login button
+
+    async function loadIdeas() {
+      const { data, error } = await sb
+        .from('ideas')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) { showError('Could not load ideas: ' + error.message); ideas = []; return; }
+      ideas = data;
+
+      const { data: aData } = await sb.from('availability').select('*');
+      if (aData) {
+        availCache = {};
+        for (const row of aData) {
+          if (!availCache[row.idea_id]) availCache[row.idea_id] = { you: [], partner: [] };
+          availCache[row.idea_id][row.person].push(row.date);
+        }
+      }
+    }
+
+    async function addIdea(title, notes, duration) {
+      let { error } = await sb.from('ideas').insert({ title, notes, duration, status: 'proposed', added_by: role });
+      // Fallback: if the added_by or duration column doesn't exist yet, retry without it
+      if (error && error.message && (error.message.includes('added_by') || error.message.includes('duration'))) {
+        ({ error } = await sb.from('ideas').insert({ title, notes, status: 'proposed' }));
+      }
+      if (error) { showError('Could not add idea: ' + error.message); }
+    }
+
+    async function confirmIdea(id, date) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'picked', confirmed_date: date })
+        .eq('id', id);
+      if (error) { showError('Could not confirm idea: ' + error.message); }
+    }
+
+    async function rescheduleIdea(id) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'proposed', confirmed_date: null })
+        .eq('id', id);
+      if (error) { showError('Could not reschedule idea: ' + error.message); }
+    }
+
+    async function updateIdea(id, { title, notes, duration }) {
+      const { error } = await sb.from('ideas')
+        .update({ title, notes, duration })
+        .eq('id', id);
+      if (error) { showError('Could not save changes: ' + error.message); }
+    }
+
+    async function markDoneIdea(id) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'done' })
+        .eq('id', id);
+      if (error) { showError('Could not mark as done: ' + error.message); }
+    }
+
+    async function undoDoneIdea(id) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'picked' })
+        .eq('id', id);
+      if (error) { showError('Could not undo: ' + error.message); }
+    }
+
+    async function loadAvail(ideaId) {
+      const { data, error } = await sb
+        .from('availability')
+        .select('*')
+        .eq('idea_id', ideaId);
+      if (error) { showError('Could not load availability: ' + error.message); availCache[ideaId] = { you: [], partner: [] }; return; }
+      const a = { you: [], partner: [] };
+      for (const row of data) { a[row.person].push(row.date); }
+      availCache[ideaId] = a;
+    }
+
+    async function toggleDay(ideaId, date) {
+      const a = availCache[ideaId];
+      const isMarked = a[role].includes(date);
+      if (isMarked) {
+        a[role] = a[role].filter(d => d !== date);
+        render(); // Optimistic update
+        const { error } = await sb.from('availability')
+          .delete()
+          .eq('idea_id', ideaId).eq('person', role).eq('date', date);
+        if (error) {
+          a[role].push(date); // Revert on failure
+          render();
+          showError('Could not update availability: ' + error.message);
+        }
+      } else {
+        a[role].push(date);
+        render(); // Optimistic update
+        const { error } = await sb.from('availability')
+          .insert({ idea_id: ideaId, person: role, date });
+        if (error) {
+          a[role] = a[role].filter(d => d !== date); // Revert on failure
+          render();
+          showError('Could not update availability: ' + error.message);
+        }
+      }
+    }
+
+    function getMatches(idea) {
+      const a = availCache[idea.id] || { you: [], partner: [] };
+      const days = Array.from({ length: 60 }, (_, i) => todayPlus(i));
+      const dur = idea.duration || 1;
+      const freeDays = days.filter(d => a.you.includes(d) && a.partner.includes(d));
+      const matches = [];
+      if (freeDays.length > 0) {
+        for (let i = 0; i <= days.length - dur; i++) {
+          let isBlockFree = true;
+          for (let j = 0; j < dur; j++) {
+            if (!freeDays.includes(days[i + j])) {
+              isBlockFree = false;
+              break;
+            }
+          }
+          if (isBlockFree) {
+            matches.push(days[i]);
+          }
+        }
+      }
+      return matches;
+    }
+
+    function renderCalendar(idea) {
+      const a = availCache[idea.id] || { you: [], partner: [] };
+      const days = Array.from({ length: 60 }, (_, i) => todayPlus(i));
+      const dur = idea.duration || 1;
+      const matches = getMatches(idea);
+
+      const myColor = role === 'you' ? 'var(--you)' : 'var(--partner)';
+      const theirColor = role === 'you' ? 'var(--partner)' : 'var(--you)';
+      let html = `<div class="legend">
+    <span><span class="dot" style="background:${myColor}"></span>you free</span>
+    <span><span class="dot" style="background:${theirColor}"></span>partner free</span>
+    <span><span class="dot" style="background:var(--both)"></span>both free 🎉</span>
+  </div>`;
+      if (matches.length) {
+        html += `<div class="match-row">
+      <span class="match-text">💚 ${matches.length} matching date${matches.length > 1 ? 's' : ''}!</span>
+    </div>
+    <div class="match-buttons">
+      ${matches.map(startD => {
+          let endD = startD;
+          if (dur > 1) {
+            const endDate = new Date(startD + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + dur - 1);
+            endD = formatLocalDate(endDate);
+          }
+          const label = dur > 1 ? `${fullDayLabel(startD)} - ${fullDayLabel(endD)}` : fullDayLabel(startD);
+          return `<button class="btn-confirm confirm-btn" data-confirm="${idea.id}" data-date="${startD}">🎉 Confirm ${label}</button>`;
+        }).join('')}
+      </div>`;
+      } else {
+        html += `<p class="no-match">💭 No common dates yet! - Come on, find some time, only ${dur} ${dur > 1 ? 'consecutive days' : 'day'}!</p>`;
+      }
+
+      let currentMonth = '';
+      for (const d of days) {
+        const monthLabel = new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+        if (monthLabel !== currentMonth) {
+          if (currentMonth !== '') html += '</div>';
+          html += `<p class="month-label">${monthLabel}</p><div class="cal">`;
+          currentMonth = monthLabel;
+        }
+        const you = a.you.includes(d), partner = a.partner.includes(d);
+        let cls = 'day';
+        if (you && partner) cls += ' both';
+        else if (you) cls += ' you';
+        else if (partner) cls += ' partner';
+        const label = dayLabel(d);
+        const parts = label.split(' ');
+        // Try to split into weekday and date number
+        const dayStr = parts.length >= 2 ? `<span>${parts[0]}</span><span style="font-size:11px;font-weight:900">${parts.slice(1).join(' ')}</span>` : `<span>${label}</span>`;
+        html += `<div class="${cls}" data-date="${d}" data-idea="${idea.id}">${dayStr}</div>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function render() {
+      const list = document.getElementById('ideaList');
+      const activeIdeas = ideas.filter(i => i.status !== 'done');
+      const doneIdeas = ideas.filter(i => i.status === 'done');
+
+      if (activeIdeas.length === 0) {
+        list.innerHTML = `<div class="empty">
+      <span class="empty-emoji">🌸</span>
+      ${doneIdeas.length > 0 ? 'All caught up here - add a new idea above! 💭' : 'No ideas yet - add your first one above!'}
+    </div>`;
+        renderDoneSection(doneIdeas);
+        return;
+      }
+      list.innerHTML = activeIdeas.map((idea, idx) => {
+        const isOpen = openIdeaId === idea.id;
+        const isPicked = idea.status === 'picked';
+        const dur = idea.duration || 1;
+        const mCount = getMatches(idea).length;
+        const matchLabel = (mCount > 0 && !isPicked) ? `<span style="font-size:12px; color:var(--both); font-weight:800; margin-left:6px;">💚 ${mCount} match${mCount > 1 ? 'es' : ''}!</span>` : '';
+
+        let dateLine = '';
+        if (isPicked) {
+          const startD = idea.confirmed_date;
+          let label = fullDayLabel(startD);
+          if (dur > 1) {
+            const endDate = new Date(startD + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + dur - 1);
+            label += ' - ' + fullDayLabel(formatLocalDate(endDate));
+          }
+          dateLine = `<div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;position:relative;">
+            <p class="picked-line" style="margin:0">📅 Planned for ${label}</p>
+            <button class="btn-ghost" data-reschedule="${idea.id}" style="padding:4px 8px;font-size:11px">Reschedule</button>
+            <div class="addcal-wrap">
+              <button class="btn-ghost" data-addcal-toggle="${idea.id}" style="padding:4px 8px;font-size:11px">📅 Add to calendar</button>
+            </div>
+            <button class="btn-done" data-markdone="${idea.id}" style="padding:4px 8px;font-size:11px">✅ Mark done</button>
+          </div>`;
+        }
+
+        const addedByMe = idea.added_by === role;
+        const emoji = idea.added_by === 'you' ? '💜' : '🧡';
+        const addedByHtml = idea.added_by ? `<p class="added-by added-by-${idea.added_by}">${emoji} ${addedByMe ? 'Added by you' : 'Added by partner'}</p>` : '';
+
+        const isEditing = editingIdeaId === idea.id;
+        const notesBlock = idea.notes
+          ? `<p class="idea-notes">${linkify(idea.notes)}</p>`
+          : `<button class="add-details-btn" data-edit="${idea.id}" data-focus-notes="1">📝 Add details</button>`;
+
+        const editPanel = isEditing ? `<div class="edit-panel" id="edit-${idea.id}">
+          <input class="edit-title-input" value="${escapeHtml(idea.title)}" placeholder="✈️ What do you want to do?" />
+          <textarea class="edit-notes-input" placeholder="📝 Add details, links, notes...">${escapeHtml(idea.notes || '')}</textarea>
+          <div class="edit-panel-row">
+            <label style="font-size:13px;font-weight:700;color:var(--text-soft)">Days:</label>
+            <input type="number" min="1" class="edit-duration-input" value="${dur}" style="width:70px" />
+          </div>
+          <div class="edit-panel-actions">
+            <button class="btn-primary" data-save-edit="${idea.id}">💾 Save</button>
+            <button class="btn-ghost" data-cancel-edit="${idea.id}">Cancel</button>
+          </div>
+        </div>` : '';
+
+        return `
+    <div class="idea-card" style="animation-delay:${idx * 0.06}s">
+      <div class="card-head" data-toggle="${idea.id}">
+        <div class="card-head-text">
+          <p class="idea-title">${isPicked ? '✅ ' : '💡 '}${idea.title} ${dur > 1 ? `<span style="font-size:12px;color:var(--text-soft);font-weight:600;margin-left:4px">(${dur} days)</span>` : ''}${matchLabel}</p>
+          ${isEditing ? '' : notesBlock}
+          ${isEditing ? '' : dateLine}
+          ${isEditing ? '' : addedByHtml}
+        </div>
+        <div class="card-right">
+          <button class="icon-btn" data-edit="${idea.id}" title="Edit idea">✏️</button>
+          <span class="pill ${isPicked ? 'picked' : 'proposed'}">${isPicked ? '🎀 Picked!' : '✨ Proposed'}</span>
+          ${!isPicked && !isEditing ? `<span class="chevron ${isOpen ? 'open' : ''}">⌄</span>` : ''}
+        </div>
+      </div>
+      ${isEditing ? editPanel : (isOpen && !isPicked ? `<div class="cal-panel" id="cal-${idea.id}">${renderCalendar(idea)}</div>` : '')}
+    </div>`;
+      }).join('');
+
+      list.querySelectorAll('[data-edit]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = el.getAttribute('data-edit');
+          const focusNotes = el.hasAttribute('data-focus-notes');
+          editingIdeaId = (editingIdeaId === id) ? null : id;
+          render();
+          if (editingIdeaId === id) {
+            requestAnimationFrame(() => {
+              const panel = document.getElementById('edit-' + id);
+              if (!panel) return;
+              const target = focusNotes ? panel.querySelector('.edit-notes-input') : panel.querySelector('.edit-title-input');
+              if (target) { target.focus(); if (target.select) target.select(); }
+            });
+          }
+        });
+      });
+      list.querySelectorAll('[data-cancel-edit]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editingIdeaId = null;
+          render();
+        });
+      });
+      list.querySelectorAll('[data-save-edit]').forEach(el => {
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = el.getAttribute('data-save-edit');
+          const panel = document.getElementById('edit-' + id);
+          if (!panel) return;
+          const title = panel.querySelector('.edit-title-input').value.trim();
+          const notes = panel.querySelector('.edit-notes-input').value.trim();
+          const duration = parseInt(panel.querySelector('.edit-duration-input').value, 10) || 1;
+          if (!title) { showError('Give your idea a title first 💭'); return; }
+          await updateIdea(id, { title, notes, duration });
+          editingIdeaId = null;
+          await loadIdeas();
+          render();
+        });
+      });
+
+      list.querySelectorAll('[data-toggle]').forEach(el => {
+        el.addEventListener('click', async () => {
+          const id = el.getAttribute('data-toggle');
+          if (openIdeaId === id) { openIdeaId = null; render(); return; }
+          openIdeaId = id;
+          if (!availCache[id]) await loadAvail(id);
+          render();
+        });
+      });
+      list.querySelectorAll('.day').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const rect = el.getBoundingClientRect();
+          spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          const id = el.getAttribute('data-idea');
+          const date = el.getAttribute('data-date');
+          toggleDay(id, date);
+        });
+      });
+      list.querySelectorAll('[data-confirm]').forEach(el => {
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const rect = el.getBoundingClientRect();
+          spawnSparkles(rect.left + rect.width / 2, rect.top);
+          const id = el.getAttribute('data-confirm');
+          const date = el.getAttribute('data-date');
+          await confirmIdea(id, date);
+          await loadIdeas();
+          openIdeaId = null;
+          render();
+        });
+      });
+      list.querySelectorAll('[data-reschedule]').forEach(el => {
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = el.getAttribute('data-reschedule');
+          await rescheduleIdea(id);
+          await loadIdeas();
+          render();
+        });
+      });
+      list.querySelectorAll('[data-addcal-toggle]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = el.getAttribute('data-addcal-toggle');
+          const menu = document.getElementById('globalAddCalMenu');
+          const wasOpenForSameIdea = menu.classList.contains('open') && currentAddCalIdeaId === id;
+          closeAddCalMenu();
+          if (!wasOpenForSameIdea) {
+            currentAddCalIdeaId = id;
+            const rect = el.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 6) + 'px';
+            menu.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 216)) + 'px';
+            menu.classList.add('open');
+          }
+        });
+      });
+      list.querySelectorAll('[data-markdone]').forEach(el => {
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const rect = el.getBoundingClientRect();
+          spawnSparkles(rect.left + rect.width / 2, rect.top);
+          const id = el.getAttribute('data-markdone');
+          await markDoneIdea(id);
+          await loadIdeas();
+          openIdeaId = null;
+          render();
+        });
+      });
+
+      renderDoneSection(doneIdeas);
+    }
+
+    function renderDoneSection(doneIdeas) {
+      const container = document.getElementById('doneSection');
+      if (!doneIdeas || doneIdeas.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+      container.style.display = 'block';
+      const sorted = [...doneIdeas].sort((a, b) => new Date(b.confirmed_date || 0) - new Date(a.confirmed_date || 0));
+      const totalDays = doneIdeas.reduce((sum, i) => sum + (i.duration || 1), 0);
+
+      container.innerHTML = `
+        <button class="done-toggle" id="doneToggleBtn">
+          <span>🎀 Done Dates</span>
+          <span class="done-count-badge">${doneIdeas.length}</span>
+          <span class="chevron ${doneSectionOpen ? 'open' : ''}">⌄</span>
+        </button>
+        <p class="done-stats">🎉 ${doneIdeas.length} date${doneIdeas.length > 1 ? 's' : ''} completed · 📆 ${totalDays} day${totalDays > 1 ? 's' : ''} together</p>
+        <div class="done-list" style="display:${doneSectionOpen ? 'flex' : 'none'}">
+          ${sorted.map(idea => {
+        const dur = idea.duration || 1;
+        let label = fullDayLabel(idea.confirmed_date);
+        if (dur > 1) {
+          const endDate = new Date(idea.confirmed_date + 'T00:00:00');
+          endDate.setDate(endDate.getDate() + dur - 1);
+          label += ' - ' + fullDayLabel(formatLocalDate(endDate));
+        }
+        return `<div class="done-card">
+              <div>
+                <p class="done-card-title">💕 ${idea.title} ${dur > 1 ? `<span style="font-size:11px;color:var(--text-soft);font-weight:600">(${dur} days)</span>` : ''}</p>
+                <p class="done-card-date">${label}</p>
+              </div>
+              <button class="btn-ghost" data-undo-done="${idea.id}" style="padding:4px 8px;font-size:11px">Undo</button>
+            </div>`;
+      }).join('')}
+        </div>
+      `;
+
+      document.getElementById('doneToggleBtn').addEventListener('click', () => {
+        doneSectionOpen = !doneSectionOpen;
+        renderDoneSection(doneIdeas);
+      });
+      container.querySelectorAll('[data-undo-done]').forEach(el => {
+        el.addEventListener('click', async () => {
+          const id = el.getAttribute('data-undo-done');
+          await undoDoneIdea(id);
+          await loadIdeas();
+          render();
+        });
+      });
+    }
+
+    let currentAddCalIdeaId = null;
+    function closeAddCalMenu() {
+      document.getElementById('globalAddCalMenu').classList.remove('open');
+      currentAddCalIdeaId = null;
+    }
+
+    document.getElementById('addcalGoogleBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idea = ideas.find(i => i.id === currentAddCalIdeaId);
+      if (idea) window.open(buildGoogleCalendarUrl(idea), '_blank', 'noopener');
+      closeAddCalMenu();
+    });
+    document.getElementById('addcalIcsBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idea = ideas.find(i => i.id === currentAddCalIdeaId);
+      if (idea) downloadICS(idea);
+      closeAddCalMenu();
+    });
+    document.getElementById('addcalTimeTreeBtn').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const idea = ideas.find(i => i.id === currentAddCalIdeaId);
+      if (idea) await addToTimeTree(idea);
+      closeAddCalMenu();
+    });
+
+    document.getElementById('addBtn').addEventListener('click', async (e) => {
+      const title = document.getElementById('newTitle').value.trim();
+      const notes = document.getElementById('newNotes').value.trim();
+      const durVal = document.getElementById('newDuration').value;
+      const duration = parseInt(durVal, 10) || 1;
+      if (!title) return;
+      const rect = e.target.getBoundingClientRect();
+      spawnSparkles(rect.left + rect.width / 2, rect.top);
+      await addIdea(title, notes, duration);
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newNotes').value = '';
+      document.getElementById('newDuration').value = '1';
+      await loadIdeas();
+      render();
+    });
+
+    async function showApp() {
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('appBox').style.display = 'block';
+      const loadEl = document.getElementById('loadState');
+      loadEl.innerHTML = '<span class="spin">🌸</span> Loading…';
+      await loadIdeas();
+      clearError();
+      loadEl.innerHTML = '';
+      render();
+    }
+
+    function updateToggleLabels() {
+      const toggle = document.getElementById('roleToggle');
+      const passInput = document.getElementById('loginPassword');
+      if (toggle.checked) {
+        document.getElementById('label-you').classList.remove('active');
+        document.getElementById('label-partner').classList.add('active');
+        if (passInput) passInput.placeholder = "Remember where we went for our first date? 💌";
+      } else {
+        document.getElementById('label-you').classList.add('active');
+        document.getElementById('label-partner').classList.remove('active');
+        if (passInput) passInput.placeholder = "This is not you, choose the other option 😁";
+      }
+    }
+
+    document.getElementById('roleToggle').addEventListener('change', updateToggleLabels);
+
+    function showLogin() {
+      document.getElementById('appBox').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      const toggle = document.getElementById('roleToggle');
+      if (toggle) {
+        toggle.checked = (role === 'partner');
+        updateToggleLabels();
+      }
+    }
+
+    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+    document.getElementById('loginBtn').addEventListener('click', async (e) => {
+      clearError();
+      const password = document.getElementById('loginPassword').value;
+      if (!password) { showError('Enter the password 💌'); return; }
+
+      role = document.getElementById('roleToggle').checked ? 'partner' : 'you';
+      localStorage.setItem('planner_role', role);
+
+      const rect = e.target.getBoundingClientRect();
+      spawnSparkles(rect.left + rect.width / 2, rect.top);
+
+      const email = role === 'you' ? YOU_EMAIL : PARTNER_EMAIL;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) { showError('I cannot believe you dont remember! 🙈'); return; }
+      await showApp();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      showLogin();
+    });
+
+    document.addEventListener('click', () => {
+      closeAddCalMenu();
+    });
+
+    (async function init() {
+      if (SUPABASE_URL.includes('__SUPABASE') || SUPABASE_ANON_KEY.includes('__SUPABASE')) {
+        showError('Supabase credentials are not set yet. Paste your project URL and anon key at the top of the script.');
+        return;
+      }
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        role = session.user.email === YOU_EMAIL ? 'you' : 'partner';
+        localStorage.setItem('planner_role', role);
+        await showApp();
+      } else {
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+
+</html>
