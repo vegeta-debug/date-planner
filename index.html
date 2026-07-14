@@ -1574,11 +1574,11 @@
     function render() {
       const list = document.getElementById('ideaList');
       const activeIdeas = ideas.filter(i => i.status !== 'done');
-      const pickedSorted = activeIdeas
+      const pickedIdeas = activeIdeas
         .filter(i => i.status === 'picked')
         .sort((a, b) => new Date(a.confirmed_date) - new Date(b.confirmed_date));
-      let pickedIdx = 0;
-      const sortedActiveIdeas = activeIdeas.map(i => i.status === 'picked' ? pickedSorted[pickedIdx++] : i);
+      const proposedIdeas = activeIdeas.filter(i => i.status !== 'picked');
+      const sortedActiveIdeas = [...pickedIdeas, ...proposedIdeas];
       const doneIdeas = ideas.filter(i => i.status === 'done');
 
       if (activeIdeas.length === 0) {
@@ -1629,10 +1629,12 @@
         const avail = availCache[idea.id] || { you: [], partner: [] };
         const youHasAvail = avail.you.length > 0;
         const partnerHasAvail = avail.partner.length > 0;
+        const youTickLabel = role === 'you' ? 'You' : 'Partner';
+        const partnerTickLabel = role === 'you' ? 'Partner' : 'You';
         const availTicksHtml = (!isPicked && (youHasAvail || partnerHasAvail))
           ? `<p class="avail-ticks">
-              ${youHasAvail ? `<span class="avail-tick tick-you" title="You selected dates">✔ you</span>` : ''}
-              ${partnerHasAvail ? `<span class="avail-tick tick-partner" title="Partner selected dates">✔ partner</span>` : ''}
+              ${youHasAvail ? `<span class="avail-tick tick-you" title="${youTickLabel} selected dates">✔ ${youTickLabel}</span>` : ''}
+              ${partnerHasAvail ? `<span class="avail-tick tick-partner" title="${partnerTickLabel} selected dates">✔ ${partnerTickLabel}</span>` : ''}
             </p>`
           : '';
 
