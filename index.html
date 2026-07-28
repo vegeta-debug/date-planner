@@ -469,6 +469,7 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       overflow: hidden;
+      position: relative;
       transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
       animation: fadeSlideUp 0.45s ease both;
     }
@@ -485,6 +486,26 @@
 
     .idea-card-picked:hover {
       border-color: var(--both);
+    }
+
+    .countdown-banner {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 20px;
+      background: var(--both-bg);
+      color: var(--both);
+      letter-spacing: 0.2px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .countdown-banner.today {
+      background: linear-gradient(135deg, var(--accent) 0%, #f472a0 100%);
+      color: #fff;
     }
 
     .card-head {
@@ -1336,6 +1357,17 @@
       return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
     }
 
+    function getCountdownInfo(startDateISO) {
+      const todayISO = formatLocalDate(new Date());
+      const start = new Date(startDateISO + 'T00:00:00');
+      const today = new Date(todayISO + 'T00:00:00');
+      const diffDays = Math.round((start - today) / 86400000);
+      if (diffDays === 0) return { text: 'Today is the day', isToday: true };
+      if (diffDays === 1) return { text: 'Tomorrow! 🎉', isToday: false };
+      if (diffDays > 1 && diffDays <= 4) return { text: `${diffDays} days to go`, isToday: false };
+      return null;
+    }
+
     // ── Add-to-calendar helpers ──
     // These only ever build a URL or a local file — no calendar account access of any kind.
     function ymd(iso) { return iso.replace(/-/g, ''); }
@@ -1654,6 +1686,14 @@
         const mCount = getMatches(idea).length;
         const matchLabel = (mCount > 0 && !isPicked) ? `<span style="font-size:12px; color:var(--both); font-weight:800; margin-left:6px;">💚 ${mCount} match${mCount > 1 ? 'es' : ''}!</span>` : '';
 
+        let countdownBannerHtml = '';
+        if (isPicked && idea.confirmed_date) {
+          const countdown = getCountdownInfo(idea.confirmed_date);
+          if (countdown) {
+            countdownBannerHtml = `<span class="countdown-banner ${countdown.isToday ? 'today' : ''}">${countdown.text}</span>`;
+          }
+        }
+
         let dateLine = '';
         if (isPicked) {
           const startD = idea.confirmed_date;
@@ -1731,6 +1771,7 @@
         </div>
       </div>
       ${isEditing ? editPanel : (isOpen && !isPicked ? `<div class="cal-panel" id="cal-${idea.id}">${renderCalendar(idea)}</div>` : '')}
+      ${isEditing ? '' : countdownBannerHtml}
     </div>`;
       }).join('');
 
