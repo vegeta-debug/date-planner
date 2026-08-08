@@ -1011,6 +1011,84 @@
       margin: 0;
     }
 
+    .btn-missed {
+      color: #9c8672;
+      border-color: #d9cdbe;
+      margin-left: auto;
+    }
+
+    .btn-missed:hover {
+      background: #f2ebe1;
+    }
+
+    /* ── Missed It section ── */
+    .missed-section {
+      margin-top: 16px;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .missed-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      background: linear-gradient(135deg, #f2ebe1 0%, #e6dccc 100%);
+      border: 1.5px dashed #b5a48d;
+      color: #8a7660;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .missed-toggle:hover {
+      background: linear-gradient(135deg, #e6dccc 0%, #f2ebe1 100%);
+    }
+
+    .missed-count-badge {
+      background: #a8907a;
+      color: #fff;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .missed-list {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      animation: expandDown 0.3s cubic-bezier(.34, 1.56, .64, 1) both;
+      transform-origin: top;
+    }
+
+    .missed-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: rgba(242, 235, 225, 0.45);
+      border: 1.5px solid #e6dccc;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      opacity: 0.85;
+    }
+
+    .missed-card-title {
+      font-weight: 800;
+      font-size: 14px;
+      margin: 0 0 2px;
+      color: #7a6a58;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .missed-card-date {
+      font-size: 12px;
+      color: #a8977f;
+      font-weight: 600;
+      margin: 0;
+    }
+
     @keyframes sway {
 
       0%,
@@ -1255,6 +1333,7 @@
 
       <div class="list" id="ideaList"></div>
       <div class="done-section" id="doneSection" style="display:none"></div>
+      <div class="missed-section" id="missedSection" style="display:none"></div>
     </div>
   </div>
 
@@ -1288,6 +1367,7 @@
     let openIdeaId = null;
     let editingIdeaId = null;
     let doneSectionOpen = false;
+    let missedSectionOpen = false;
 
     /* ── Floating hearts ── */
     (function spawnHearts() {
@@ -1498,6 +1578,36 @@
           availCache[row.idea_id][row.person].push(row.date);
         }
       }
+
+      await cleanupPastAvailability(ideas);
+    }
+
+    // Past dates a partner marked as free are no longer valid options once they've
+    // passed, so they should never count toward finding a matching date. This trims
+    // them from proposed ideas both locally (immediately) and in the database
+    // (best-effort, so they don't keep piling up).
+    async function cleanupPastAvailability(loadedIdeas) {
+      const todayISO = formatLocalDate(new Date());
+      const proposedIds = loadedIdeas.filter(i => i.status === 'proposed').map(i => i.id);
+      if (proposedIds.length === 0) return;
+
+      let anyRemoved = false;
+      for (const id of proposedIds) {
+        const a = availCache[id];
+        if (!a) continue;
+        const youBefore = a.you.length, partnerBefore = a.partner.length;
+        a.you = a.you.filter(d => d >= todayISO);
+        a.partner = a.partner.filter(d => d >= todayISO);
+        if (a.you.length !== youBefore || a.partner.length !== partnerBefore) anyRemoved = true;
+      }
+
+      if (anyRemoved) {
+        try {
+          await sb.from('availability').delete().in('idea_id', proposedIds).lt('date', todayISO);
+        } catch (e) {
+          console.error('Past-availability cleanup failed:', e);
+        }
+      }
     }
 
     async function addIdea(title, notes, duration) {
@@ -1544,6 +1654,22 @@
       if (error) { showError('Could not undo: ' + error.message); }
     }
 
+    async function markMissedIdea(id) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'missed' })
+        .eq('id', id);
+      if (error) { showError('Could not move to Missed It: ' + error.message); }
+    }
+
+    // Undo always restores to "proposed" — a missed idea may have come from either
+    // proposed or picked, and proposed is the safest common state to fall back to.
+    async function undoMissedIdea(id) {
+      const { error } = await sb.from('ideas')
+        .update({ status: 'proposed' })
+        .eq('id', id);
+      if (error) { showError('Could not undo: ' + error.message); }
+    }
+
     async function loadAvail(ideaId) {
       const { data, error } = await sb
         .from('availability')
@@ -1552,6 +1678,12 @@
       if (error) { showError('Could not load availability: ' + error.message); availCache[ideaId] = { you: [], partner: [] }; return; }
       const a = { you: [], partner: [] };
       for (const row of data) { a[row.person].push(row.date); }
+      const idea = ideas.find(i => i.id === ideaId);
+      if (idea && idea.status === 'proposed') {
+        const todayISO = formatLocalDate(new Date());
+        a.you = a.you.filter(d => d >= todayISO);
+        a.partner = a.partner.filter(d => d >= todayISO);
+      }
       availCache[ideaId] = a;
     }
 
@@ -1663,20 +1795,22 @@
 
     function render() {
       const list = document.getElementById('ideaList');
-      const activeIdeas = ideas.filter(i => i.status !== 'done');
+      const activeIdeas = ideas.filter(i => i.status !== 'done' && i.status !== 'missed');
       const pickedIdeas = activeIdeas
         .filter(i => i.status === 'picked')
         .sort((a, b) => new Date(a.confirmed_date) - new Date(b.confirmed_date));
       const proposedIdeas = activeIdeas.filter(i => i.status !== 'picked');
       const sortedActiveIdeas = [...pickedIdeas, ...proposedIdeas];
       const doneIdeas = ideas.filter(i => i.status === 'done');
+      const missedIdeas = ideas.filter(i => i.status === 'missed');
 
       if (activeIdeas.length === 0) {
         list.innerHTML = `<div class="empty">
       <span class="empty-emoji">🌸</span>
-      ${doneIdeas.length > 0 ? 'All caught up here - add a new idea above! 💭' : 'No ideas yet - add your first one above!'}
+      ${(doneIdeas.length > 0 || missedIdeas.length > 0) ? 'All caught up here - add a new idea above! 💭' : 'No ideas yet - add your first one above!'}
     </div>`;
         renderDoneSection(doneIdeas);
+        renderMissedSection(missedIdeas);
         return;
       }
       list.innerHTML = sortedActiveIdeas.map((idea, idx) => {
@@ -1751,6 +1885,7 @@
           <div class="edit-panel-actions">
             <button class="btn-primary" data-save-edit="${idea.id}">💾 Save</button>
             <button class="btn-ghost" data-cancel-edit="${idea.id}">Cancel</button>
+            <button class="btn-ghost btn-missed" data-mark-missed="${idea.id}">⏳ Can't happen anymore</button>
           </div>
         </div>` : '';
 
@@ -1885,8 +2020,20 @@
           render();
         });
       });
+      list.querySelectorAll('[data-mark-missed]').forEach(el => {
+        el.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = el.getAttribute('data-mark-missed');
+          await markMissedIdea(id);
+          editingIdeaId = null;
+          await loadIdeas();
+          openIdeaId = null;
+          render();
+        });
+      });
 
       renderDoneSection(doneIdeas);
+      renderMissedSection(missedIdeas);
     }
 
     function renderDoneSection(doneIdeas) {
@@ -1935,6 +2082,60 @@
         el.addEventListener('click', async () => {
           const id = el.getAttribute('data-undo-done');
           await undoDoneIdea(id);
+          await loadIdeas();
+          render();
+        });
+      });
+    }
+
+    function renderMissedSection(missedIdeas) {
+      const container = document.getElementById('missedSection');
+      if (!missedIdeas || missedIdeas.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+      container.style.display = 'block';
+      const sorted = [...missedIdeas].sort((a, b) => new Date(b.confirmed_date || 0) - new Date(a.confirmed_date || 0));
+
+      container.innerHTML = `
+        <button class="missed-toggle" id="missedToggleBtn">
+          <span>⏳ Missed It</span>
+          <span class="missed-count-badge">${missedIdeas.length}</span>
+          <span class="chevron ${missedSectionOpen ? 'open' : ''}">⌄</span>
+        </button>
+        <div class="missed-list" style="display:${missedSectionOpen ? 'flex' : 'none'}">
+          ${sorted.map(idea => {
+        const dur = idea.duration || 1;
+        let dateInfo = '';
+        if (idea.confirmed_date) {
+          let label = fullDayLabel(idea.confirmed_date);
+          if (dur > 1) {
+            const endDate = new Date(idea.confirmed_date + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + dur - 1);
+            label += ' - ' + fullDayLabel(formatLocalDate(endDate));
+          }
+          dateInfo = `<p class="missed-card-date">Was planned for ${label}</p>`;
+        }
+        return `<div class="missed-card">
+              <div>
+                <p class="missed-card-title">${idea.title} ${dur > 1 ? `<span style="font-size:11px;color:#a8977f;font-weight:600">(${dur} days)</span>` : ''}</p>
+                ${dateInfo}
+              </div>
+              <button class="btn-ghost" data-undo-missed="${idea.id}" style="padding:4px 8px;font-size:11px">Undo</button>
+            </div>`;
+      }).join('')}
+        </div>
+      `;
+
+      document.getElementById('missedToggleBtn').addEventListener('click', () => {
+        missedSectionOpen = !missedSectionOpen;
+        renderMissedSection(missedIdeas);
+      });
+      container.querySelectorAll('[data-undo-missed]').forEach(el => {
+        el.addEventListener('click', async () => {
+          const id = el.getAttribute('data-undo-missed');
+          await undoMissedIdea(id);
           await loadIdeas();
           render();
         });
