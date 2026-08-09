@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Date & Travel Planner 💕</title>
   <meta name="description" content="Let me make it easy for you! 😉">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💕</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
@@ -1252,6 +1253,312 @@
     input:checked+.slider:before {
       transform: translateX(22px);
     }
+    /* ══════════════ New feature styles ══════════════ */
+
+    /* ── Categories ── */
+    .category-select {
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    .cat-food { background: var(--accent-bg); color: var(--accent); }
+    .cat-outdoors { background: var(--both-bg); color: var(--both); }
+    .cat-travel { background: var(--you-bg); color: var(--you); }
+    .cat-cozy { background: var(--partner-bg); color: var(--partner); }
+    .cat-culture { background: #e8f0fb; color: #4a7fc9; }
+    .cat-other { background: #eef1f4; color: #7c8a99; }
+
+    .category-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+      animation: fadeSlideDown 0.6s ease both;
+    }
+
+    .category-chip {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 13px;
+      border-radius: 20px;
+      border: 1.5px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--text-soft);
+      cursor: pointer;
+    }
+
+    .category-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── Surprise mode ── */
+    .surprise-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+
+    .surprise-toggle-row input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .surprise-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 20px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      margin-top: 6px;
+    }
+
+    .surprise-placeholder-title {
+      font-weight: 800;
+      font-size: 15px;
+      margin: 0 0 3px;
+      color: var(--text-soft);
+      font-style: italic;
+    }
+
+    /* ── Milestone badges ── */
+    .badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .badge-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1.5px solid var(--both-bg);
+    }
+
+    .badge-pill.earned {
+      background: linear-gradient(135deg, var(--both-bg) 0%, #d4f0e0 100%);
+      color: var(--both);
+    }
+
+    .badge-pill.locked {
+      background: rgba(255, 255, 255, 0.4);
+      color: var(--text-mute);
+      opacity: 0.55;
+      filter: grayscale(1);
+    }
+
+    /* ── Memory field ── */
+    .memory-block {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--both-bg);
+    }
+
+    .memory-text {
+      font-size: 12.5px;
+      color: var(--text-soft);
+      font-style: italic;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .memory-add-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--both);
+      cursor: pointer;
+      text-decoration: underline dotted;
+      text-underline-offset: 2px;
+    }
+
+    .memory-edit-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .memory-edit-row textarea {
+      min-height: 44px;
+      font-size: 12.5px;
+    }
+
+    /* ── Spin the wheel ── */
+    .wheel-launch-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      animation: fadeSlideDown 0.6s ease both;
+    }
+
+    .wheel-launch-btn {
+      background: linear-gradient(135deg, var(--you) 0%, #9b7fd6 100%);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 4px 16px rgba(124, 92, 191, 0.35);
+    }
+
+    .wheel-launch-btn:hover {
+      box-shadow: 0 6px 20px rgba(124, 92, 191, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .wheel-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(61, 44, 53, 0.55);
+      backdrop-filter: blur(4px);
+      padding: 20px;
+    }
+
+    .wheel-modal {
+      background: var(--bg-from);
+      background: linear-gradient(160deg, #fff9fb 0%, #fdeef3 100%);
+      border-radius: 24px;
+      padding: 28px 24px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    .wheel-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid var(--card-border);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .wheel-title {
+      font-weight: 800;
+      font-size: 17px;
+      margin: 0 0 18px;
+      color: var(--text);
+    }
+
+    .wheel-stage {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      margin: 0 auto 20px;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 20px solid var(--accent);
+      z-index: 3;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+    }
+
+    .wheel-disc {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2), inset 0 0 0 2px rgba(0, 0, 0, 0.05);
+      transition: transform 4.2s cubic-bezier(.17, .89, .32, 1.1);
+    }
+
+    .wheel-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      white-space: nowrap;
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+    }
+
+    .wheel-hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .wheel-result {
+      min-height: 26px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .wheel-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 
@@ -1332,6 +1639,27 @@
         </div>
         <button id="addBtn" class="btn-primary">＋ Add idea</button>
       </div>
+      <div class="addrow" style="margin-top:-0.5rem">
+        <select id="newCategory" class="category-select">
+          <option value="">🏷️ Category (optional)</option>
+          <option value="food">🍜 Food</option>
+          <option value="outdoors">🏔️ Outdoors</option>
+          <option value="travel">✈️ Travel</option>
+          <option value="cozy">🛋️ Cozy</option>
+          <option value="culture">🎨 Culture</option>
+          <option value="other">🎉 Other</option>
+        </select>
+        <label class="surprise-toggle-row">
+          <input type="checkbox" id="newSurprise" />
+          🎁 Keep as a surprise
+        </label>
+      </div>
+
+      <div class="wheel-launch-row" id="wheelLaunchRow" style="display:none">
+        <button class="wheel-launch-btn" id="wheelLaunchBtn">🎡 Spin the wheel</button>
+      </div>
+
+      <div class="category-filter-row" id="categoryFilterRow" style="display:none"></div>
 
       <div class="list" id="ideaList"></div>
       <div class="done-section" id="doneSection" style="display:none"></div>
@@ -1344,6 +1672,8 @@
     <button id="addcalIcsBtn">📥 Apple / Outlook (.ics)</button>
     <button id="addcalTimeTreeBtn">🌳 TimeTree</button>
   </div>
+
+  <div id="wheelOverlay" style="display:none"></div>
 
   <script>
     /* ====================================================================
@@ -1370,6 +1700,18 @@
     let editingIdeaId = null;
     let doneSectionOpen = false;
     let missedSectionOpen = false;
+    let categoryFilter = 'all';
+    let editingMemoryId = null;
+    let wheelCandidates = [];
+
+    const CATEGORY_META = {
+      food: { emoji: '🍜', label: 'Food', cls: 'cat-food' },
+      outdoors: { emoji: '🏔️', label: 'Outdoors', cls: 'cat-outdoors' },
+      travel: { emoji: '✈️', label: 'Travel', cls: 'cat-travel' },
+      cozy: { emoji: '🛋️', label: 'Cozy', cls: 'cat-cozy' },
+      culture: { emoji: '🎨', label: 'Culture', cls: 'cat-culture' },
+      other: { emoji: '🎉', label: 'Other', cls: 'cat-other' },
+    };
 
     /* ── Floating hearts ── */
     (function spawnHearts() {
@@ -1612,13 +1954,24 @@
       }
     }
 
-    async function addIdea(title, notes, duration) {
-      let { error } = await sb.from('ideas').insert({ title, notes, duration, status: 'proposed', added_by: role });
-      // Fallback: if the added_by or duration column doesn't exist yet, retry without it
+    async function addIdea(title, notes, duration, category, isSurprise) {
+      let { error } = await sb.from('ideas').insert({
+        title, notes, duration, status: 'proposed', added_by: role,
+        category: category || null, is_surprise: !!isSurprise
+      });
+      // Fallback: if newer columns don't exist yet in the database, retry without them
+      if (error && error.message && (error.message.includes('category') || error.message.includes('is_surprise'))) {
+        ({ error } = await sb.from('ideas').insert({ title, notes, duration, status: 'proposed', added_by: role }));
+      }
       if (error && error.message && (error.message.includes('added_by') || error.message.includes('duration'))) {
         ({ error } = await sb.from('ideas').insert({ title, notes, status: 'proposed' }));
       }
       if (error) { showError('Could not add idea: ' + error.message); }
+    }
+
+    async function saveMemory(id, memory) {
+      const { error } = await sb.from('ideas').update({ memory }).eq('id', id);
+      if (error) { showError('Could not save memory: ' + error.message); }
     }
 
     async function confirmIdea(id, date) {
@@ -1635,9 +1988,9 @@
       if (error) { showError('Could not reschedule idea: ' + error.message); }
     }
 
-    async function updateIdea(id, { title, notes, duration }) {
+    async function updateIdea(id, { title, notes, duration, category, isSurprise }) {
       const { error } = await sb.from('ideas')
-        .update({ title, notes, duration })
+        .update({ title, notes, duration, category: category || null, is_surprise: !!isSurprise })
         .eq('id', id);
       if (error) { showError('Could not save changes: ' + error.message); }
     }
@@ -1806,6 +2159,13 @@
       const doneIdeas = ideas.filter(i => i.status === 'done');
       const missedIdeas = ideas.filter(i => i.status === 'missed');
 
+      renderCategoryFilterRow(activeIdeas);
+      renderWheelLaunch(proposedIdeas);
+
+      const displayedIdeas = categoryFilter === 'all'
+        ? sortedActiveIdeas
+        : sortedActiveIdeas.filter(i => i.category === categoryFilter);
+
       if (activeIdeas.length === 0) {
         list.innerHTML = `<div class="empty">
       <span class="empty-emoji">🌸</span>
@@ -1815,7 +2175,16 @@
         renderMissedSection(missedIdeas);
         return;
       }
-      list.innerHTML = sortedActiveIdeas.map((idea, idx) => {
+      if (displayedIdeas.length === 0) {
+        list.innerHTML = `<div class="empty">
+      <span class="empty-emoji">🔍</span>
+      No ideas in this category yet.
+    </div>`;
+        renderDoneSection(doneIdeas);
+        renderMissedSection(missedIdeas);
+        return;
+      }
+      list.innerHTML = displayedIdeas.map((idea, idx) => {
         const isOpen = openIdeaId === idea.id;
         const isPicked = idea.status === 'picked';
         const dur = idea.duration || 1;
@@ -1873,6 +2242,13 @@
           : '';
 
         const isEditing = editingIdeaId === idea.id;
+        const isHiddenSurprise = !!idea.is_surprise && idea.added_by && idea.added_by !== role && idea.status === 'proposed';
+        const catMeta = idea.category ? CATEGORY_META[idea.category] : null;
+        const categoryBadgeHtml = (catMeta && !isHiddenSurprise)
+          ? `<span class="category-badge ${catMeta.cls}">${catMeta.emoji} ${catMeta.label}</span>` : '';
+        const surpriseOwnerTag = (idea.is_surprise && idea.added_by === role && idea.status === 'proposed')
+          ? `<span class="surprise-tag">🎁 Surprise (hidden from partner)</span>` : '';
+
         const notesBlock = idea.notes
           ? `<p class="idea-notes">${linkify(idea.notes)}</p>`
           : `<button class="add-details-btn" data-edit="${idea.id}" data-focus-notes="1">📝 Add details</button>`;
@@ -1884,6 +2260,16 @@
             <label style="font-size:13px;font-weight:700;color:var(--text-soft)">Days:</label>
             <input type="number" min="1" class="edit-duration-input" value="${dur}" style="width:70px" />
           </div>
+          <div class="edit-panel-row">
+            <select class="edit-category-input category-select">
+              <option value="">🏷️ Category (optional)</option>
+              ${Object.entries(CATEGORY_META).map(([key, meta]) => `<option value="${key}" ${idea.category === key ? 'selected' : ''}>${meta.emoji} ${meta.label}</option>`).join('')}
+            </select>
+          </div>
+          <label class="surprise-toggle-row">
+            <input type="checkbox" class="edit-surprise-input" ${idea.is_surprise ? 'checked' : ''} />
+            🎁 Keep as a surprise
+          </label>
           <div class="edit-panel-actions">
             <button class="btn-primary" data-save-edit="${idea.id}">💾 Save</button>
             <button class="btn-ghost" data-cancel-edit="${idea.id}">Cancel</button>
@@ -1891,18 +2277,26 @@
           </div>
         </div>` : '';
 
-        return `
-    <div class="idea-card ${isPicked ? 'idea-card-picked' : ''}" style="animation-delay:${idx * 0.06}s">
-      <div class="card-head" data-toggle="${idea.id}">
-        <div class="card-head-text">
-          <p class="idea-title">${isPicked ? '✅ ' : '💡 '}${idea.title} ${dur > 1 ? `<span style="font-size:12px;color:var(--text-soft);font-weight:600;margin-left:4px">(${dur} days)</span>` : ''}${matchLabel}</p>
+        const cardHeaderHtml = isHiddenSurprise
+          ? `<p class="surprise-placeholder-title">🎁 A surprise idea from your partner! ${matchLabel}</p>
+             <p class="idea-notes" style="font-style:italic">Mark your free dates below — the details will reveal once you both pick a date.</p>
+             ${availTicksHtml}`
+          : `<p class="idea-title">${isPicked ? '✅ ' : '💡 '}${idea.title} ${dur > 1 ? `<span style="font-size:12px;color:var(--text-soft);font-weight:600;margin-left:4px">(${dur} days)</span>` : ''}${matchLabel}</p>
           ${isEditing ? '' : notesBlock}
           ${isEditing ? '' : dateLine}
           ${isEditing ? '' : addedByHtml}
           ${isEditing ? '' : availTicksHtml}
+          ${isEditing ? '' : categoryBadgeHtml}
+          ${isEditing ? '' : surpriseOwnerTag}`;
+
+        return `
+    <div class="idea-card ${isPicked ? 'idea-card-picked' : ''}" style="animation-delay:${idx * 0.06}s">
+      <div class="card-head" data-toggle="${idea.id}">
+        <div class="card-head-text">
+          ${cardHeaderHtml}
         </div>
         <div class="card-right">
-          <button class="icon-btn" data-edit="${idea.id}" title="Edit idea">✏️</button>
+          ${(!isHiddenSurprise) ? `<button class="icon-btn" data-edit="${idea.id}" title="Edit idea">✏️</button>` : ''}
           <span class="pill ${isPicked ? 'picked' : 'proposed'}">${isPicked ? '🎀 Picked!' : '✨ Proposed'}</span>
           ${!isPicked && !isEditing ? `<span class="chevron ${isOpen ? 'open' : ''}">⌄</span>` : ''}
         </div>
@@ -1945,8 +2339,10 @@
           const title = panel.querySelector('.edit-title-input').value.trim();
           const notes = panel.querySelector('.edit-notes-input').value.trim();
           const duration = parseInt(panel.querySelector('.edit-duration-input').value, 10) || 1;
+          const category = panel.querySelector('.edit-category-input').value;
+          const isSurprise = panel.querySelector('.edit-surprise-input').checked;
           if (!title) { showError('Give your idea a title first 💭'); return; }
-          await updateIdea(id, { title, notes, duration });
+          await updateIdea(id, { title, notes, duration, category, isSurprise });
           editingIdeaId = null;
           await loadIdeas();
           render();
@@ -2016,10 +2412,16 @@
           const rect = el.getBoundingClientRect();
           spawnSparkles(rect.left + rect.width / 2, rect.top);
           const id = el.getAttribute('data-markdone');
+          const badgesBefore = getBadges(ideas.filter(i => i.status === 'done'));
           await markDoneIdea(id);
           await loadIdeas();
+          const badgesAfter = getBadges(ideas.filter(i => i.status === 'done'));
+          const newlyEarned = badgesAfter.find((b, i) => b.earned && !badgesBefore[i].earned);
           openIdeaId = null;
           render();
+          if (newlyEarned) {
+            setTimeout(() => showToast(`${newlyEarned.emoji} New badge earned: ${newlyEarned.label}!`), 300);
+          }
         });
       });
       list.querySelectorAll('[data-mark-missed]').forEach(el => {
@@ -2038,6 +2440,19 @@
       renderMissedSection(missedIdeas);
     }
 
+    function getBadges(doneIdeas) {
+      const doneCount = doneIdeas.length;
+      const tripCount = doneIdeas.filter(i => (i.duration || 1) > 1).length;
+      return [
+        { id: 'first', emoji: '🎉', label: 'First Date', earned: doneCount >= 1 },
+        { id: 'five', emoji: '🔥', label: '5 Dates', earned: doneCount >= 5 },
+        { id: 'ten', emoji: '🏆', label: '10 Dates', earned: doneCount >= 10 },
+        { id: 'twenty', emoji: '💯', label: '20 Dates', earned: doneCount >= 20 },
+        { id: 'trip1', emoji: '🧳', label: 'First Trip', earned: tripCount >= 1 },
+        { id: 'trip3', emoji: '🌍', label: 'Explorer', earned: tripCount >= 3 },
+      ];
+    }
+
     function renderDoneSection(doneIdeas) {
       const container = document.getElementById('doneSection');
       if (!doneIdeas || doneIdeas.length === 0) {
@@ -2048,8 +2463,11 @@
       container.style.display = 'block';
       const sorted = [...doneIdeas].sort((a, b) => new Date(b.confirmed_date || 0) - new Date(a.confirmed_date || 0));
       const totalDays = doneIdeas.reduce((sum, i) => sum + (i.duration || 1), 0);
+      const badges = getBadges(doneIdeas);
+      const badgesRowHtml = `<div class="badges-row">${badges.map(b => `<span class="badge-pill ${b.earned ? 'earned' : 'locked'}" title="${b.label}">${b.emoji} ${b.label}</span>`).join('')}</div>`;
 
       container.innerHTML = `
+        ${badgesRowHtml}
         <button class="done-toggle" id="doneToggleBtn">
           <span>🎀 Done Dates</span>
           <span class="done-count-badge">${doneIdeas.length}</span>
@@ -2065,12 +2483,35 @@
           endDate.setDate(endDate.getDate() + dur - 1);
           label += ' - ' + fullDayLabel(formatLocalDate(endDate));
         }
-        return `<div class="done-card">
-              <div>
-                <p class="done-card-title">💕 ${idea.title} ${dur > 1 ? `<span style="font-size:11px;color:var(--text-soft);font-weight:600">(${dur} days)</span>` : ''}</p>
-                <p class="done-card-date">${label}</p>
+        const isEditingMemory = editingMemoryId === idea.id;
+        let memoryHtml;
+        if (isEditingMemory) {
+          memoryHtml = `<div class="memory-edit-row">
+              <textarea class="memory-input" placeholder="What made this day special? 💭">${escapeHtml(idea.memory || '')}</textarea>
+              <div style="display:flex;gap:8px">
+                <button class="btn-primary" data-save-memory="${idea.id}" style="padding:6px 12px;font-size:12px">💾 Save</button>
+                <button class="btn-ghost" data-cancel-memory="${idea.id}" style="padding:6px 12px;font-size:12px">Cancel</button>
               </div>
-              <button class="btn-ghost" data-undo-done="${idea.id}" style="padding:4px 8px;font-size:11px">Undo</button>
+            </div>`;
+        } else if (idea.memory) {
+          memoryHtml = `<div class="memory-block">
+              <p class="memory-text">💭 "${linkify(idea.memory)}"</p>
+              <button class="memory-add-btn" data-edit-memory="${idea.id}">Edit memory</button>
+            </div>`;
+        } else {
+          memoryHtml = `<div class="memory-block">
+              <button class="memory-add-btn" data-edit-memory="${idea.id}">📝 Add a memory from this date</button>
+            </div>`;
+        }
+        return `<div class="done-card" style="flex-direction:column;align-items:stretch;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <div>
+                  <p class="done-card-title">💕 ${idea.title} ${dur > 1 ? `<span style="font-size:11px;color:var(--text-soft);font-weight:600">(${dur} days)</span>` : ''}</p>
+                  <p class="done-card-date">${label}</p>
+                </div>
+                <button class="btn-ghost" data-undo-done="${idea.id}" style="padding:4px 8px;font-size:11px">Undo</button>
+              </div>
+              ${memoryHtml}
             </div>`;
       }).join('')}
         </div>
@@ -2088,6 +2529,172 @@
           render();
         });
       });
+      container.querySelectorAll('[data-edit-memory]').forEach(el => {
+        el.addEventListener('click', () => {
+          editingMemoryId = el.getAttribute('data-edit-memory');
+          renderDoneSection(doneIdeas);
+          requestAnimationFrame(() => {
+            const ta = container.querySelector('.memory-input');
+            if (ta) ta.focus();
+          });
+        });
+      });
+      container.querySelectorAll('[data-cancel-memory]').forEach(el => {
+        el.addEventListener('click', () => {
+          editingMemoryId = null;
+          renderDoneSection(doneIdeas);
+        });
+      });
+      container.querySelectorAll('[data-save-memory]').forEach(el => {
+        el.addEventListener('click', async () => {
+          const id = el.getAttribute('data-save-memory');
+          const panel = el.closest('.done-card');
+          const memory = panel.querySelector('.memory-input').value.trim();
+          await saveMemory(id, memory);
+          editingMemoryId = null;
+          await loadIdeas();
+          render();
+        });
+      });
+    }
+
+    function renderCategoryFilterRow(activeIdeas) {
+      const row = document.getElementById('categoryFilterRow');
+      const presentCategories = [...new Set(activeIdeas.map(i => i.category).filter(Boolean))];
+      if (presentCategories.length === 0) {
+        row.style.display = 'none';
+        row.innerHTML = '';
+        if (categoryFilter !== 'all') categoryFilter = 'all';
+        return;
+      }
+      row.style.display = 'flex';
+      const chips = [{ key: 'all', label: 'All', emoji: '🌈' }, ...presentCategories.map(key => ({ key, ...CATEGORY_META[key] }))];
+      row.innerHTML = chips.map(c => `<button class="category-chip ${categoryFilter === c.key ? 'active' : ''}" data-cat-filter="${c.key}">${c.emoji} ${c.label}</button>`).join('');
+      row.querySelectorAll('[data-cat-filter]').forEach(el => {
+        el.addEventListener('click', () => {
+          categoryFilter = el.getAttribute('data-cat-filter');
+          render();
+        });
+      });
+    }
+
+    function renderWheelLaunch(proposedIdeas) {
+      wheelCandidates = proposedIdeas;
+      const row = document.getElementById('wheelLaunchRow');
+      row.style.display = proposedIdeas.length >= 2 ? 'flex' : 'none';
+    }
+
+    const WHEEL_PALETTE = ['var(--accent)', 'var(--you)', 'var(--both)', 'var(--partner)', '#4a7fc9', '#7c8a99', '#e0a640', '#4fb0a5'];
+    let wheelRotationAccum = 0;
+
+    function wheelLabelForIdea(idea) {
+      const isHidden = !!idea.is_surprise && idea.added_by && idea.added_by !== role && idea.status === 'proposed';
+      if (isHidden) return '🎁 Surprise idea';
+      const t = idea.title || '';
+      return t.length > 16 ? t.slice(0, 15) + '…' : t;
+    }
+
+    function openWheel() {
+      if (wheelCandidates.length < 2) return;
+      wheelRotationAccum = 0;
+      const overlay = document.getElementById('wheelOverlay');
+      const n = wheelCandidates.length;
+      const segAngle = 360 / n;
+      const stops = wheelCandidates.map((idea, i) => {
+        const color = WHEEL_PALETTE[i % WHEEL_PALETTE.length];
+        const start = (i / n) * 100;
+        const end = ((i + 1) / n) * 100;
+        return `${color} ${start}% ${end}%`;
+      }).join(', ');
+      const labels = wheelCandidates.map((idea, i) => {
+        const midAngle = (i + 0.5) * segAngle;
+        return `<span class="wheel-label" style="transform: rotate(${(midAngle - 90).toFixed(2)}deg) translateX(58px);">${escapeHtml(wheelLabelForIdea(idea))}</span>`;
+      }).join('');
+
+      overlay.innerHTML = `
+        <div class="wheel-overlay" id="wheelBackdrop">
+          <div class="wheel-modal">
+            <button class="wheel-close-btn" id="wheelCloseBtn">✕</button>
+            <p class="wheel-title">🎡 Can't decide? Let fate pick!</p>
+            <div class="wheel-stage">
+              <div class="wheel-pointer"></div>
+              <div class="wheel-disc" id="wheelDisc" style="background: conic-gradient(from 0deg, ${stops});">
+                ${labels}
+              </div>
+              <div class="wheel-hub">🎯</div>
+            </div>
+            <p class="wheel-result" id="wheelResultText"></p>
+            <div class="wheel-actions" id="wheelActionsRow">
+              <button class="btn-primary" id="wheelSpinBtn">🎡 Spin!</button>
+              <button class="btn-ghost" id="wheelCancelBtn">Close</button>
+            </div>
+          </div>
+        </div>`;
+      overlay.style.display = 'block';
+
+      document.getElementById('wheelCloseBtn').addEventListener('click', closeWheel);
+      document.getElementById('wheelCancelBtn').addEventListener('click', closeWheel);
+      document.getElementById('wheelBackdrop').addEventListener('click', (e) => {
+        if (e.target.id === 'wheelBackdrop') closeWheel();
+      });
+      document.getElementById('wheelSpinBtn').addEventListener('click', spinWheel);
+    }
+
+    function closeWheel() {
+      const overlay = document.getElementById('wheelOverlay');
+      overlay.style.display = 'none';
+      overlay.innerHTML = '';
+    }
+
+    function spinWheel() {
+      const spinBtn = document.getElementById('wheelSpinBtn');
+      const resultText = document.getElementById('wheelResultText');
+      const disc = document.getElementById('wheelDisc');
+      const n = wheelCandidates.length;
+      const segAngle = 360 / n;
+
+      spinBtn.disabled = true;
+      spinBtn.style.opacity = '0.6';
+      resultText.textContent = '';
+
+      const targetIndex = Math.floor(Math.random() * n);
+      const jitter = (Math.random() - 0.5) * segAngle * 0.5;
+      const targetMidAngle = (targetIndex + 0.5) * segAngle + jitter;
+      const extraSpins = 5;
+      const delta = extraSpins * 360 + ((360 - targetMidAngle) % 360);
+      wheelRotationAccum += delta;
+
+      disc.style.transform = `rotate(${wheelRotationAccum}deg)`;
+
+      setTimeout(() => {
+        const idea = wheelCandidates[targetIndex];
+        const label = wheelLabelForIdea(idea);
+        resultText.textContent = `🎉 Let's do: ${label}!`;
+        spinBtn.disabled = false;
+        spinBtn.style.opacity = '1';
+        spinBtn.textContent = '🔄 Spin again';
+        const rect = disc.getBoundingClientRect();
+        spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+        const actionsRow = document.getElementById('wheelActionsRow');
+        if (!document.getElementById('wheelOpenIdeaBtn')) {
+          const openBtn = document.createElement('button');
+          openBtn.className = 'btn-done';
+          openBtn.id = 'wheelOpenIdeaBtn';
+          openBtn.style.cssText = 'padding:10px 16px;font-size:14px';
+          openBtn.textContent = '🔎 Open this idea';
+          actionsRow.insertBefore(openBtn, actionsRow.firstChild);
+          openBtn.addEventListener('click', () => {
+            closeWheel();
+            openIdeaId = idea.id;
+            render();
+            requestAnimationFrame(() => {
+              const cardEl = document.querySelector(`[data-toggle="${idea.id}"]`);
+              if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+          });
+        }
+      }, 4300);
     }
 
     function renderMissedSection(missedIdeas) {
@@ -2169,18 +2776,24 @@
       closeAddCalMenu();
     });
 
+    document.getElementById('wheelLaunchBtn').addEventListener('click', openWheel);
+
     document.getElementById('addBtn').addEventListener('click', async (e) => {
       const title = document.getElementById('newTitle').value.trim();
       const notes = document.getElementById('newNotes').value.trim();
       const durVal = document.getElementById('newDuration').value;
       const duration = parseInt(durVal, 10) || 1;
+      const category = document.getElementById('newCategory').value;
+      const isSurprise = document.getElementById('newSurprise').checked;
       if (!title) return;
       const rect = e.target.getBoundingClientRect();
       spawnSparkles(rect.left + rect.width / 2, rect.top);
-      await addIdea(title, notes, duration);
+      await addIdea(title, notes, duration, category, isSurprise);
       document.getElementById('newTitle').value = '';
       document.getElementById('newNotes').value = '';
       document.getElementById('newDuration').value = '1';
+      document.getElementById('newCategory').value = '';
+      document.getElementById('newSurprise').checked = false;
       await loadIdeas();
       render();
     });
