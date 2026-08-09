@@ -2247,8 +2247,8 @@
         </div>` : '';
 
         const cardHeaderHtml = isHiddenSurprise
-          ? `<p class="surprise-placeholder-title">🎁 A surprise idea from your partner! ${matchLabel}</p>
-             <p class="idea-notes" style="font-style:italic">Mark your free dates below — the details will reveal once you both pick a date.</p>
+          ? `<p class="surprise-placeholder-title">🎁 This is a surprise! ${matchLabel}</p>
+             <p class="idea-notes" style="font-style:italic">Pick some dates and you'll know what it is 😉</p>
              ${availTicksHtml}`
           : `<p class="idea-title">${isPicked ? '✅ ' : '💡 '}${idea.title} ${dur > 1 ? `<span style="font-size:12px;color:var(--text-soft);font-weight:600;margin-left:4px">(${dur} days)</span>` : ''}${matchLabel}</p>
           ${isEditing ? '' : notesBlock}
