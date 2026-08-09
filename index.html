@@ -425,6 +425,14 @@
       gap: 5px;
     }
 
+    .toprow-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
     .spin {
       animation: spin 1s linear infinite;
       display: inline-block;
@@ -442,6 +450,7 @@
       gap: 8px;
       margin-bottom: 1.75rem;
       flex-wrap: wrap;
+      justify-content: center;
       animation: fadeSlideDown 0.65s ease both;
     }
 
@@ -1412,9 +1421,7 @@
     /* ── Spin the wheel ── */
     .wheel-launch-row {
       display: flex;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-      animation: fadeSlideDown 0.6s ease both;
+      justify-content: flex-end;
     }
 
     .wheel-launch-btn {
@@ -1619,7 +1626,12 @@
         <div class="role-row">
           <button id="logoutBtn" class="btn-ghost" style="padding:7px 13px;font-size:13px">Sign out</button>
         </div>
-        <span class="loadstate" id="loadState"></span>
+        <div class="toprow-right">
+          <span class="loadstate" id="loadState"></span>
+          <div class="wheel-launch-row" id="wheelLaunchRow" style="display:none">
+            <button class="wheel-launch-btn" id="wheelLaunchBtn">🎡 Spin the wheel</button>
+          </div>
+        </div>
       </div>
 
       <div class="addrow">
@@ -1627,7 +1639,7 @@
         <input id="newNotes" placeholder="📝 Details(but you don't have to)" style="flex:2" />
         <div style="display:flex; align-items:center; gap:6px; flex:0 0 auto; min-width:90px;">
           <label for="newDuration" style="font-size:13px; font-weight:700; color:var(--text-soft);">Days:</label>
-          <input id="newDuration" type="number" min="1" value="1" style="width:70px;" />
+          <input id="newDuration" type="number" min="1" value="1" style="width:55px;" />
         </div>
         <div class="surprise-toggle-row">
           <label class="switch-sm">
@@ -1636,13 +1648,7 @@
           </label>
           <span>🎁 Surprise</span>
         </div>
-      </div>
-      <div class="addrow" style="margin-top:-0.5rem">
         <button id="addBtn" class="btn-primary">＋ Add idea</button>
-      </div>
-
-      <div class="wheel-launch-row" id="wheelLaunchRow" style="display:none">
-        <button class="wheel-launch-btn" id="wheelLaunchBtn">🎡 Spin the wheel</button>
       </div>
 
       <div class="list" id="ideaList"></div>
