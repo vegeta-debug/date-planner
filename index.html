@@ -1255,57 +1255,6 @@
     }
     /* ══════════════ New feature styles ══════════════ */
 
-    /* ── Categories ── */
-    .category-select {
-      flex: 1;
-      min-width: 150px;
-      max-width: 220px;
-      width: auto;
-    }
-
-    .category-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 2px 9px;
-      border-radius: 20px;
-      margin-top: 6px;
-    }
-
-    .cat-food { background: var(--accent-bg); color: var(--accent); }
-    .cat-outdoors { background: var(--both-bg); color: var(--both); }
-    .cat-travel { background: var(--you-bg); color: var(--you); }
-    .cat-cozy { background: var(--partner-bg); color: var(--partner); }
-    .cat-culture { background: #e8f0fb; color: #4a7fc9; }
-    .cat-other { background: #eef1f4; color: #7c8a99; }
-
-    .category-filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 1.25rem;
-      animation: fadeSlideDown 0.6s ease both;
-    }
-
-    .category-chip {
-      font-size: 12px;
-      font-weight: 800;
-      padding: 6px 13px;
-      border-radius: 20px;
-      border: 1.5px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.6);
-      color: var(--text-soft);
-      cursor: pointer;
-    }
-
-    .category-chip.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
     /* ── Surprise mode ── */
     .surprise-toggle-row {
       display: flex;
@@ -1314,8 +1263,7 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--text-soft);
-      flex: 1;
-      min-width: 170px;
+      flex: 0 0 auto;
       white-space: nowrap;
     }
 
@@ -1632,21 +1580,12 @@
       <div class="addrow">
         <input id="newTitle" placeholder="✈️ What do you want to do?" style="flex:2" />
         <input id="newNotes" placeholder="📝 Details(but you don't have to)" style="flex:2" />
-        <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:90px;">
+        <div style="display:flex; align-items:center; gap:6px; flex:0 0 auto; min-width:90px;">
           <label for="newDuration" style="font-size:13px; font-weight:700; color:var(--text-soft);">Days:</label>
-          <input id="newDuration" type="number" min="1" value="1" style="width:100%;" />
+          <input id="newDuration" type="number" min="1" value="1" style="width:70px;" />
         </div>
       </div>
       <div class="addrow" style="margin-top:-0.5rem">
-        <select id="newCategory" class="category-select">
-          <option value="">🏷️ Category (optional)</option>
-          <option value="food">🍜 Food</option>
-          <option value="outdoors">🏔️ Outdoors</option>
-          <option value="travel">✈️ Travel</option>
-          <option value="cozy">🛋️ Cozy</option>
-          <option value="culture">🎨 Culture</option>
-          <option value="other">🎉 Other</option>
-        </select>
         <label class="surprise-toggle-row">
           <input type="checkbox" id="newSurprise" />
           🎁 Keep as a surprise
@@ -1657,8 +1596,6 @@
       <div class="wheel-launch-row" id="wheelLaunchRow" style="display:none">
         <button class="wheel-launch-btn" id="wheelLaunchBtn">🎡 Spin the wheel</button>
       </div>
-
-      <div class="category-filter-row" id="categoryFilterRow" style="display:none"></div>
 
       <div class="list" id="ideaList"></div>
       <div class="done-section" id="doneSection" style="display:none"></div>
@@ -1699,18 +1636,8 @@
     let editingIdeaId = null;
     let doneSectionOpen = false;
     let missedSectionOpen = false;
-    let categoryFilter = 'all';
     let editingMemoryId = null;
     let wheelCandidates = [];
-
-    const CATEGORY_META = {
-      food: { emoji: '🍜', label: 'Food', cls: 'cat-food' },
-      outdoors: { emoji: '🏔️', label: 'Outdoors', cls: 'cat-outdoors' },
-      travel: { emoji: '✈️', label: 'Travel', cls: 'cat-travel' },
-      cozy: { emoji: '🛋️', label: 'Cozy', cls: 'cat-cozy' },
-      culture: { emoji: '🎨', label: 'Culture', cls: 'cat-culture' },
-      other: { emoji: '🎉', label: 'Other', cls: 'cat-other' },
-    };
 
     /* ── Floating hearts ── */
     (function spawnHearts() {
@@ -1953,13 +1880,13 @@
       }
     }
 
-    async function addIdea(title, notes, duration, category, isSurprise) {
+    async function addIdea(title, notes, duration, isSurprise) {
       let { error } = await sb.from('ideas').insert({
         title, notes, duration, status: 'proposed', added_by: role,
-        category: category || null, is_surprise: !!isSurprise
+        is_surprise: !!isSurprise
       });
       // Fallback: if newer columns don't exist yet in the database, retry without them
-      if (error && error.message && (error.message.includes('category') || error.message.includes('is_surprise'))) {
+      if (error && error.message && error.message.includes('is_surprise')) {
         ({ error } = await sb.from('ideas').insert({ title, notes, duration, status: 'proposed', added_by: role }));
       }
       if (error && error.message && (error.message.includes('added_by') || error.message.includes('duration'))) {
@@ -1987,9 +1914,9 @@
       if (error) { showError('Could not reschedule idea: ' + error.message); }
     }
 
-    async function updateIdea(id, { title, notes, duration, category, isSurprise }) {
+    async function updateIdea(id, { title, notes, duration, isSurprise }) {
       const { error } = await sb.from('ideas')
-        .update({ title, notes, duration, category: category || null, is_surprise: !!isSurprise })
+        .update({ title, notes, duration, is_surprise: !!isSurprise })
         .eq('id', id);
       if (error) { showError('Could not save changes: ' + error.message); }
     }
@@ -2158,26 +2085,14 @@
       const doneIdeas = ideas.filter(i => i.status === 'done');
       const missedIdeas = ideas.filter(i => i.status === 'missed');
 
-      renderCategoryFilterRow(activeIdeas);
       renderWheelLaunch(proposedIdeas);
 
-      const displayedIdeas = categoryFilter === 'all'
-        ? sortedActiveIdeas
-        : sortedActiveIdeas.filter(i => i.category === categoryFilter);
+      const displayedIdeas = sortedActiveIdeas;
 
       if (activeIdeas.length === 0) {
         list.innerHTML = `<div class="empty">
       <span class="empty-emoji">🌸</span>
       ${(doneIdeas.length > 0 || missedIdeas.length > 0) ? 'All caught up here - add a new idea above! 💭' : 'No ideas yet - add your first one above!'}
-    </div>`;
-        renderDoneSection(doneIdeas);
-        renderMissedSection(missedIdeas);
-        return;
-      }
-      if (displayedIdeas.length === 0) {
-        list.innerHTML = `<div class="empty">
-      <span class="empty-emoji">🔍</span>
-      No ideas in this category yet.
     </div>`;
         renderDoneSection(doneIdeas);
         renderMissedSection(missedIdeas);
@@ -2242,9 +2157,6 @@
 
         const isEditing = editingIdeaId === idea.id;
         const isHiddenSurprise = !!idea.is_surprise && idea.added_by && idea.added_by !== role && idea.status === 'proposed';
-        const catMeta = idea.category ? CATEGORY_META[idea.category] : null;
-        const categoryBadgeHtml = (catMeta && !isHiddenSurprise)
-          ? `<span class="category-badge ${catMeta.cls}">${catMeta.emoji} ${catMeta.label}</span>` : '';
         const surpriseOwnerTag = (idea.is_surprise && idea.added_by === role && idea.status === 'proposed')
           ? `<span class="surprise-tag">🎁 Surprise (hidden from partner)</span>` : '';
 
@@ -2259,16 +2171,10 @@
             <label style="font-size:13px;font-weight:700;color:var(--text-soft)">Days:</label>
             <input type="number" min="1" class="edit-duration-input" value="${dur}" style="width:70px" />
           </div>
-          <div class="edit-panel-row">
-            <select class="edit-category-input category-select">
-              <option value="">🏷️ Category (optional)</option>
-              ${Object.entries(CATEGORY_META).map(([key, meta]) => `<option value="${key}" ${idea.category === key ? 'selected' : ''}>${meta.emoji} ${meta.label}</option>`).join('')}
-            </select>
-            <label class="surprise-toggle-row">
-              <input type="checkbox" class="edit-surprise-input" ${idea.is_surprise ? 'checked' : ''} />
-              🎁 Keep as a surprise
-            </label>
-          </div>
+          <label class="surprise-toggle-row">
+            <input type="checkbox" class="edit-surprise-input" ${idea.is_surprise ? 'checked' : ''} />
+            🎁 Keep as a surprise
+          </label>
           <div class="edit-panel-actions">
             <button class="btn-primary" data-save-edit="${idea.id}">💾 Save</button>
             <button class="btn-ghost" data-cancel-edit="${idea.id}">Cancel</button>
@@ -2285,7 +2191,6 @@
           ${isEditing ? '' : dateLine}
           ${isEditing ? '' : addedByHtml}
           ${isEditing ? '' : availTicksHtml}
-          ${isEditing ? '' : categoryBadgeHtml}
           ${isEditing ? '' : surpriseOwnerTag}`;
 
         return `
@@ -2338,10 +2243,9 @@
           const title = panel.querySelector('.edit-title-input').value.trim();
           const notes = panel.querySelector('.edit-notes-input').value.trim();
           const duration = parseInt(panel.querySelector('.edit-duration-input').value, 10) || 1;
-          const category = panel.querySelector('.edit-category-input').value;
           const isSurprise = panel.querySelector('.edit-surprise-input').checked;
           if (!title) { showError('Give your idea a title first 💭'); return; }
-          await updateIdea(id, { title, notes, duration, category, isSurprise });
+          await updateIdea(id, { title, notes, duration, isSurprise });
           editingIdeaId = null;
           await loadIdeas();
           render();
@@ -2557,26 +2461,6 @@
       });
     }
 
-    function renderCategoryFilterRow(activeIdeas) {
-      const row = document.getElementById('categoryFilterRow');
-      const presentCategories = [...new Set(activeIdeas.map(i => i.category).filter(Boolean))];
-      if (presentCategories.length === 0) {
-        row.style.display = 'none';
-        row.innerHTML = '';
-        if (categoryFilter !== 'all') categoryFilter = 'all';
-        return;
-      }
-      row.style.display = 'flex';
-      const chips = [{ key: 'all', label: 'All', emoji: '🌈' }, ...presentCategories.map(key => ({ key, ...CATEGORY_META[key] }))];
-      row.innerHTML = chips.map(c => `<button class="category-chip ${categoryFilter === c.key ? 'active' : ''}" data-cat-filter="${c.key}">${c.emoji} ${c.label}</button>`).join('');
-      row.querySelectorAll('[data-cat-filter]').forEach(el => {
-        el.addEventListener('click', () => {
-          categoryFilter = el.getAttribute('data-cat-filter');
-          render();
-        });
-      });
-    }
-
     function renderWheelLaunch(proposedIdeas) {
       wheelCandidates = proposedIdeas;
       const row = document.getElementById('wheelLaunchRow');
@@ -2782,16 +2666,14 @@
       const notes = document.getElementById('newNotes').value.trim();
       const durVal = document.getElementById('newDuration').value;
       const duration = parseInt(durVal, 10) || 1;
-      const category = document.getElementById('newCategory').value;
       const isSurprise = document.getElementById('newSurprise').checked;
       if (!title) return;
       const rect = e.target.getBoundingClientRect();
       spawnSparkles(rect.left + rect.width / 2, rect.top);
-      await addIdea(title, notes, duration, category, isSurprise);
+      await addIdea(title, notes, duration, isSurprise);
       document.getElementById('newTitle').value = '';
       document.getElementById('newNotes').value = '';
       document.getElementById('newDuration').value = '1';
-      document.getElementById('newCategory').value = '';
       document.getElementById('newSurprise').checked = false;
       await loadIdeas();
       render();
