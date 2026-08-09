@@ -1257,14 +1257,10 @@
 
     /* ── Categories ── */
     .category-select {
-      font-family: 'Nunito', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      border: 1.5px solid var(--card-border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--text);
+      flex: 1;
+      min-width: 150px;
+      max-width: 220px;
+      width: auto;
     }
 
     .category-badge {
@@ -1318,6 +1314,9 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--text-soft);
+      flex: 1;
+      min-width: 170px;
+      white-space: nowrap;
     }
 
     .surprise-toggle-row input[type="checkbox"] {
@@ -1637,7 +1636,6 @@
           <label for="newDuration" style="font-size:13px; font-weight:700; color:var(--text-soft);">Days:</label>
           <input id="newDuration" type="number" min="1" value="1" style="width:100%;" />
         </div>
-        <button id="addBtn" class="btn-primary">＋ Add idea</button>
       </div>
       <div class="addrow" style="margin-top:-0.5rem">
         <select id="newCategory" class="category-select">
@@ -1653,6 +1651,7 @@
           <input type="checkbox" id="newSurprise" />
           🎁 Keep as a surprise
         </label>
+        <button id="addBtn" class="btn-primary">＋ Add idea</button>
       </div>
 
       <div class="wheel-launch-row" id="wheelLaunchRow" style="display:none">
@@ -2265,11 +2264,11 @@
               <option value="">🏷️ Category (optional)</option>
               ${Object.entries(CATEGORY_META).map(([key, meta]) => `<option value="${key}" ${idea.category === key ? 'selected' : ''}>${meta.emoji} ${meta.label}</option>`).join('')}
             </select>
+            <label class="surprise-toggle-row">
+              <input type="checkbox" class="edit-surprise-input" ${idea.is_surprise ? 'checked' : ''} />
+              🎁 Keep as a surprise
+            </label>
           </div>
-          <label class="surprise-toggle-row">
-            <input type="checkbox" class="edit-surprise-input" ${idea.is_surprise ? 'checked' : ''} />
-            🎁 Keep as a surprise
-          </label>
           <div class="edit-panel-actions">
             <button class="btn-primary" data-save-edit="${idea.id}">💾 Save</button>
             <button class="btn-ghost" data-cancel-edit="${idea.id}">Cancel</button>
