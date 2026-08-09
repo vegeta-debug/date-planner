@@ -2541,6 +2541,11 @@
       return t.length > 16 ? t.slice(0, 15) + '…' : t;
     }
 
+    function wheelFullNameForIdea(idea) {
+      const isHidden = !!idea.is_surprise && idea.added_by && idea.added_by !== role && idea.status === 'proposed';
+      return isHidden ? '🎁 Surprise idea' : (idea.title || '');
+    }
+
     function openWheel() {
       if (wheelCandidates.length < 2) return;
       wheelRotationAccum = 0;
@@ -2621,8 +2626,8 @@
 
       setTimeout(() => {
         const idea = wheelCandidates[targetIndex];
-        const label = wheelLabelForIdea(idea);
-        resultText.textContent = `🎉 Let's do: ${idea}!`;
+        const label = wheelFullNameForIdea(idea);
+        resultText.textContent = `🎉 Let's do: ${label}!`;
         spinBtn.disabled = false;
         spinBtn.style.opacity = '1';
         spinBtn.textContent = '🔄 Spin again';
