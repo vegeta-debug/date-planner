@@ -2533,6 +2533,7 @@
 
     const WHEEL_PALETTE = ['var(--accent)', 'var(--you)', 'var(--both)', 'var(--partner)', '#4a7fc9', '#7c8a99', '#e0a640', '#4fb0a5'];
     let wheelRotationAccum = 0;
+    let wheelCurrentWinner = null;
 
     function wheelLabelForIdea(idea) {
       const isHidden = !!idea.is_surprise && idea.added_by && idea.added_by !== role && idea.status === 'proposed';
@@ -2549,6 +2550,7 @@
     function openWheel() {
       if (wheelCandidates.length < 2) return;
       wheelRotationAccum = 0;
+      wheelCurrentWinner = null;
       const overlay = document.getElementById('wheelOverlay');
       const n = wheelCandidates.length;
       const segAngle = 360 / n;
@@ -2626,6 +2628,7 @@
 
       setTimeout(() => {
         const idea = wheelCandidates[targetIndex];
+        wheelCurrentWinner = idea;
         const label = wheelFullNameForIdea(idea);
         resultText.textContent = `🎉 Let's do: ${label}!`;
         spinBtn.disabled = false;
@@ -2644,10 +2647,10 @@
           actionsRow.insertBefore(openBtn, actionsRow.firstChild);
           openBtn.addEventListener('click', () => {
             closeWheel();
-            openIdeaId = idea.id;
+            openIdeaId = wheelCurrentWinner.id;
             render();
             requestAnimationFrame(() => {
-              const cardEl = document.querySelector(`[data-toggle="${idea.id}"]`);
+              const cardEl = document.querySelector(`[data-toggle="${wheelCurrentWinner.id}"]`);
               if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
           });
