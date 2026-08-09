@@ -1464,12 +1464,14 @@
       position: absolute;
       top: 14px;
       right: 14px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1.5px solid var(--card-border);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      font-size: 14px;
+      background: none;
+      border: none;
+      padding: 4px;
+      width: auto;
+      height: auto;
+      font-size: 18px;
+      line-height: 1;
+      color: var(--text-soft);
       cursor: pointer;
     }
 
@@ -1520,10 +1522,15 @@
       font-weight: 800;
       color: #fff;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-      white-space: nowrap;
-      max-width: 90px;
+      width: 74px;
+      text-align: center;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      word-break: break-word;
       pointer-events: none;
     }
 
@@ -2548,14 +2555,14 @@
       }).join(', ');
       const labels = wheelCandidates.map((idea, i) => {
         const midAngle = (i + 0.5) * segAngle;
-        return `<span class="wheel-label" style="transform: rotate(${(midAngle - 90).toFixed(2)}deg) translateX(58px);">${escapeHtml(wheelLabelForIdea(idea))}</span>`;
+        return `<span class="wheel-label" style="transform: rotate(${(midAngle - 90).toFixed(2)}deg) translate(58px, -50%);">${escapeHtml(wheelLabelForIdea(idea))}</span>`;
       }).join('');
 
       overlay.innerHTML = `
         <div class="wheel-overlay" id="wheelBackdrop">
           <div class="wheel-modal">
             <button class="wheel-close-btn" id="wheelCloseBtn">✕</button>
-            <p class="wheel-title">🎡 Can't decide? Let fate pick!</p>
+            <p class="wheel-title">🎡 Little help in picking our next date!</p>
             <div class="wheel-stage">
               <div class="wheel-pointer"></div>
               <div class="wheel-disc" id="wheelDisc" style="background: conic-gradient(from 0deg, ${stops});">
@@ -2601,7 +2608,13 @@
       const jitter = (Math.random() - 0.5) * segAngle * 0.5;
       const targetMidAngle = (targetIndex + 0.5) * segAngle + jitter;
       const extraSpins = 5;
-      const delta = extraSpins * 360 + ((360 - targetMidAngle) % 360);
+      // The disc's *current* resting angle (mod 360) must be accounted for —
+      // otherwise leftover rotation from a previous spin accumulates and the
+      // disc stops at the wrong segment relative to the computed winner.
+      const currentAngle = ((wheelRotationAccum % 360) + 360) % 360;
+      const desiredFinalAngle = (360 - targetMidAngle) % 360;
+      const forwardDelta = ((desiredFinalAngle - currentAngle) % 360 + 360) % 360;
+      const delta = extraSpins * 360 + forwardDelta;
       wheelRotationAccum += delta;
 
       disc.style.transform = `rotate(${wheelRotationAccum}deg)`;
