@@ -1403,6 +1403,30 @@
       font-size: 12.5px;
     }
 
+    /* ── Date drought banner ── */
+    .drought-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ff8a65 0%, var(--accent) 55%, #c94e6e 100%);
+      box-shadow: 0 6px 18px rgba(224, 92, 126, 0.4);
+      animation: fadeSlideDown 0.6s ease both, droughtPulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes droughtPulse {
+      0%, 100% { box-shadow: 0 6px 18px rgba(224, 92, 126, 0.4); }
+      50% { box-shadow: 0 6px 26px rgba(224, 92, 126, 0.65); }
+    }
+
     /* ── Spin the wheel ── */
     .wheel-launch-row {
       display: flex;
@@ -1637,6 +1661,7 @@
         </div>
       </div>
 
+      <div id="dateDroughtBanner"></div>
       <div class="list" id="ideaList"></div>
       <div class="done-section" id="doneSection" style="display:none"></div>
       <div class="missed-section" id="missedSection" style="display:none"></div>
@@ -2126,6 +2151,7 @@
       const missedIdeas = ideas.filter(i => i.status === 'missed');
 
       renderWheelLaunch(proposedIdeas);
+      renderDroughtBanner(doneIdeas);
 
       const displayedIdeas = sortedActiveIdeas;
 
@@ -2508,6 +2534,32 @@
       wheelCandidates = proposedIdeas;
       const row = document.getElementById('wheelLaunchRow');
       row.style.display = proposedIdeas.length >= 2 ? 'flex' : 'none';
+    }
+
+    function renderDroughtBanner(doneIdeas) {
+      const banner = document.getElementById('dateDroughtBanner');
+      if (!doneIdeas || doneIdeas.length === 0) { banner.innerHTML = ''; return; }
+
+      // Use the last day of the most recent completed idea (accounting for multi-day trips).
+      let lastEndISO = null;
+      doneIdeas.forEach(idea => {
+        if (!idea.confirmed_date) return;
+        const dur = idea.duration || 1;
+        const endDate = new Date(idea.confirmed_date + 'T00:00:00');
+        endDate.setDate(endDate.getDate() + dur - 1);
+        const endISO = formatLocalDate(endDate);
+        if (!lastEndISO || endISO > lastEndISO) lastEndISO = endISO;
+      });
+      if (!lastEndISO) { banner.innerHTML = ''; return; }
+
+      const todayISO = formatLocalDate(new Date());
+      const daysSince = Math.round((new Date(todayISO + 'T00:00:00') - new Date(lastEndISO + 'T00:00:00')) / 86400000);
+
+      if (daysSince > 21) {
+        banner.innerHTML = `<div class="drought-banner">📢 Breaking news: ${daysSince} days since our last date. Romance meter is running low…</div>`;
+      } else {
+        banner.innerHTML = '';
+      }
     }
 
     const WHEEL_PALETTE = ['var(--accent)', 'var(--you)', 'var(--both)', 'var(--partner)', '#4a7fc9', '#7c8a99', '#e0a640', '#4fb0a5'];
